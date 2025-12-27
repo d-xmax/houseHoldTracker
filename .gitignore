@@ -1,0 +1,60 @@
+# ========================
+# Node modules
+# ========================
+node_modules/
+apps/*/node_modules/
+
+# ========================
+# Environment files
+# ========================
+.env
+apps/*/.env
+
+# ========================
+# Logs
+# ========================
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ========================
+# Build outputs
+# ========================
+dist/
+build/
+out/
+apps/frontend/dist/
+apps/backend/dist/
+
+# ========================
+# Vite / Cache
+# ========================
+.vite/
+apps/frontend/.vite/
+apps/backend/.vite/
+.cache/
+*.temp
+
+# ========================
+# OS / system files
+# ========================
+.DS_Store
+Thumbs.db
+
+# ========================
+# IDE / Editor files
+# ========================
+
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# ========================
+# Misc / coverage / backup
+# ========================
+coverage/
+*.bak
+*.swp
+*.tmp
