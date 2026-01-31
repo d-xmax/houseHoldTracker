@@ -25,21 +25,9 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
-import type { Item } from '@/features/inventory/types';
+ 
 
-interface InventoryTableProps {
-  items: Item[];
-  searchValue: string;
-  onSearchChange: (value: string) => void;
-  selectedCategory: string;
-  onCategoryChange: (value: string) => void;
-  categories: string[];
-  onExport: () => void;
-  onAddItem: () => void;
-  onBulkAdd: () => void;
-  onEditItem: (item: Item) => void;
-  onDeleteItem: (item: Item) => void;
-}
+ 
 
 export function InventoryTable({
   items,
@@ -53,7 +41,7 @@ export function InventoryTable({
   onBulkAdd,
   onEditItem,
   onDeleteItem,
-}: InventoryTableProps) {
+}  ) {
   return (
     <Card className="border-none shadow-sm overflow-hidden flex flex-col h-full">
       <div className="p-4 border-b border-slate-50 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white">

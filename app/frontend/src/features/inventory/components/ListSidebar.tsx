@@ -6,22 +6,12 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import type { InventoryList } from '@/features/inventory/types';
+ 
 import {
   getColorClasses, 
 } from '@/utils/inventory-helpers';
 
-interface ListSidebarProps {
-  lists: InventoryList[];
-  visibleLists: InventoryList[];
-  selectedListId: string;
-  onSelectList: (id: string) => void;
-  onCreateList: () => void;
-  onEditList: (list: InventoryList) => void;
-  onDeleteList: (list: InventoryList) => void;
-  totalValue: number;
-  isSearchActive: boolean;
-}
+ 
 
 export function ListSidebar({
   lists,
@@ -33,7 +23,7 @@ export function ListSidebar({
   onDeleteList,
   totalValue,
   isSearchActive,
-}: ListSidebarProps) {
+} ) {
   return (
     <aside className="w-full lg:w-64 flex flex-col gap-6">
       <Card className="border-none shadow-sm">

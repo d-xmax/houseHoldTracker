@@ -12,17 +12,12 @@ import {
   AvatarImage,
 } from '@/components/ui/avatar';
 
-interface AppHeaderProps {
-  searchValue: string;
-  onSearchChange: (value: string) => void;
-  onMenuClick: () => void;
-}
-
+ 
 export function AppHeader({
   searchValue,
   onSearchChange,
   onMenuClick,
-}: AppHeaderProps) {
+}) {
   return (
     <header className="h-16 flex items-center justify-between px-6 bg-transparent pt-4 lg:pt-0">
       <div className="flex items-center gap-4 lg:hidden">

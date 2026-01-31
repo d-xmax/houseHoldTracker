@@ -8,19 +8,13 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import type { DeleteTarget } from '@/features/inventory/types';
-
-interface DeleteConfirmModalProps {
-  target: DeleteTarget;
-  onOpenChange: (open: boolean) => void;
-  onConfirm: () => void;
-}
+import type { DeleteConfirmModalTypes } from '../modalTypes';
 
 export function DeleteConfirmModal({
   target,
   onOpenChange,
   onConfirm,
-}: DeleteConfirmModalProps) {
+}: DeleteConfirmModalTypes) {
   const isListDelete = target?.type === 'list';
   const entityName =
     target?.type === 'item'

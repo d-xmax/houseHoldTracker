@@ -17,15 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import type { ItemFormValues } from '@/features/inventory/types';
-
-interface EditItemModalProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  form: ItemFormValues;
-  onFormChange: (values: ItemFormValues) => void;
-  onSave: () => void;
-}
+import type { EditItemModalTypes } from '../modalTypes';
 
 export function EditItemModal({
   open,
@@ -33,7 +25,7 @@ export function EditItemModal({
   form,
   onFormChange,
   onSave,
-}: EditItemModalProps) {
+}: EditItemModalTypes) {
   return (
     <Dialog
       open={open}
@@ -245,7 +237,8 @@ export function EditItemModal({
                   onValueChange={(value) =>
                     onFormChange({
                       ...form,
-                      condition: value,
+                      condition:
+                        value as typeof form.condition,
                     })
                   }
                 >

@@ -18,22 +18,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import type { ListFormValues } from '@/features/inventory/types';
-
-interface CreateListModalProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  form: ListFormValues;
-  onFormChange: (values: ListFormValues) => void;
-  onCreate: () => void;
-}
+import type { CreateListModalTypes } from '../modalTypes';
 
 const COLOR_OPTIONS = [
+  { value: 'red', label: 'Red' },
   { value: 'blue', label: 'Blue' },
   { value: 'green', label: 'Green' },
-  { value: 'purple', label: 'Purple' },
-  { value: 'red', label: 'Red' },
   { value: 'yellow', label: 'Yellow' },
+  { value: 'purple', label: 'Purple' },
 ];
 
 export function CreateListModal({
@@ -42,7 +34,7 @@ export function CreateListModal({
   form,
   onFormChange,
   onCreate,
-}: CreateListModalProps) {
+}: CreateListModalTypes) {
   return (
     <Dialog
       open={open}

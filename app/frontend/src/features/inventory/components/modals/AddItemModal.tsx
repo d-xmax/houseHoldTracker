@@ -17,15 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import type { ItemFormValues } from '@/features/inventory/types';
-
-interface AddItemModalProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  form: ItemFormValues;
-  onFormChange: (values: ItemFormValues) => void;
-  onAdd: () => void;
-}
+import type { AddItemModalTypes } from '../modalTypes';
 
 export function AddItemModal({
   open,
@@ -33,7 +25,7 @@ export function AddItemModal({
   form,
   onFormChange,
   onAdd,
-}: AddItemModalProps) {
+}: AddItemModalTypes) {
   return (
     <Dialog
       open={open}

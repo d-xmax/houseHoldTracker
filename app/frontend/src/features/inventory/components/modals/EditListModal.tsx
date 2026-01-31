@@ -18,16 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import type { ListFormValues } from '@/features/inventory/types';
-
-interface EditListModalProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  form: ListFormValues;
-  onFormChange: (values: ListFormValues) => void;
-  onSave: () => void;
-  listName?: string;
-}
+import type { EditListModalTypes } from '../modalTypes';
 
 const COLOR_OPTIONS = [
   { value: 'blue', label: 'Blue' },
@@ -44,7 +35,7 @@ export function EditListModal({
   onFormChange,
   onSave,
   listName,
-}: EditListModalProps) {
+}: EditListModalTypes) {
   return (
     <Dialog
       open={open}

@@ -10,14 +10,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-
-interface BulkAddModalProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  value: string;
-  onChange: (value: string) => void;
-  onProcess: () => void;
-}
+import type { BulkAddModalTypes } from '../modalTypes';
 
 export function BulkAddModal({
   open,
@@ -25,7 +18,7 @@ export function BulkAddModal({
   value,
   onChange,
   onProcess,
-}: BulkAddModalProps) {
+}: BulkAddModalTypes) {
   return (
     <Dialog
       open={open}

@@ -7,17 +7,14 @@ import {
   Alert,
   AlertDescription,
 } from '@/components/ui/alert';
-import type { Notification } from '@/features/inventory/types';
+ 
 
-interface NotificationAlertProps {
-  notification: Notification | null;
-  onClose: () => void;
-}
+ 
 
 export function NotificationAlert({
   notification,
   onClose,
-}: NotificationAlertProps) {
+}) {
   if (!notification) return null;
 
   const getIcon = () => {

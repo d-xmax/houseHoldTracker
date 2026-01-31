@@ -4,113 +4,23 @@ import {
   useRef,
   useState,
 } from 'react';
-import type {
-  DeleteTarget,
-  InventoryList,
-  Item,
-  ItemFormValues,
-  ListFormValues,
-  Notification,
-} from '../types';
+ 
 import {
   getTotalValue,
   validateItemForm,
   validateListForm,
 } from '@/utils/inventory-helpers';
 
-const INITIAL_LISTS: InventoryList[] = [
-  {
-    id: '1',
-    name: 'Pantry Items',
-    description: 'Dry goods and non-perishables',
-    color: 'blue',
-    createdDate: new Date().toISOString(),
-    items: [
-      {
-        id: '1',
-        name: 'bnn Rice',
-        description: 'Premium long grain rice',
-        category: 'Grains & Cereals',
-        price: 12.99,
-        quantity: 2,
-        unit: 'bags',
-        location: 'Pantry Shelf 2',
-        condition: 'Good',
-        addedDate: new Date().toISOString(),
-      },
-      {
-        id: '2',
-        name: 'Olive Oil',
-        description: 'Extra virgin olive oil',
-        category: 'Condiments',
-        price: 8.99,
-        quantity: 1,
-        unit: 'bottles',
-        location: 'Pantry Shelf 1',
-        condition: 'Good',
-        addedDate: new Date().toISOString(),
-      },
-    ],
-  },
-  {
-    id: '2',
-    name: 'Fresh Produce',
-    description: 'Fruits and vegetables',
-    color: 'green',
-    createdDate: new Date().toISOString(),
-    items: [
-      {
-        id: '3',
-        name: 'Organic Bananas',
-        description: 'Fresh organic bananas',
-        category: 'Fruits',
-        price: 3.49,
-        quantity: 1,
-        unit: 'bunch',
-        location: 'Fruit Bowl',
-        condition: 'Good',
-        addedDate: new Date().toISOString(),
-      },
-    ],
-  },
-  {
-    id: '3',
-    name: 'Refrigerator',
-    description: 'Dairy, meat, and perishables',
-    color: 'purple',
-    createdDate: new Date().toISOString(),
-    items: [
-      {
-        id: '4',
-        name: 'Whole Milk',
-        description: 'Fresh whole milk',
-        category: 'Dairy',
-        price: 4.39,
-        quantity: 1,
-        unit: 'gallon',
-        location: 'Main Fridge',
-        condition: 'Good',
-        addedDate: new Date().toISOString(),
-      },
-    ],
-  },
+const INITIAL_LISTS  = [
+   
 ];
 
-const DEFAULT_LIST_FORM: ListFormValues = {
-  name: '',
-  description: '',
-  color: 'blue',
+const DEFAULT_LIST_FORM   = {
+  
 };
 
-const DEFAULT_ITEM_FORM: ItemFormValues = {
-  name: '',
-  description: '',
-  category: '',
-  price: '',
-  quantity: '1',
-  unit: '',
-  location: '',
-  condition: 'Good',
+const DEFAULT_ITEM_FORM   = {
+   
 };
 
 export function useInventory() {

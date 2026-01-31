@@ -10,28 +10,12 @@ import {
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
-interface AppSidebarProps {
-  isOpen: boolean;
-  onClose: () => void;
-  activeTab: string;
-  onTabChange: (tab: string) => void;
-}
-
+ 
 const MAIN_MENU = [
-  {
-    id: 'tasks',
-    icon: Package2,
-    label: 'Tasks',
-  },
+  
 ];
 const GENERAL_MENU = [
-  {
-    id: 'settings',
-    icon: Settings,
-    label: 'Settings',
-  },
-  { id: 'help', icon: HelpCircle, label: 'Help' },
-  { id: 'logout', icon: LogOut, label: 'Logout' },
+  
 ];
 
 export function AppSidebar({
@@ -39,13 +23,8 @@ export function AppSidebar({
   onClose,
   activeTab,
   onTabChange,
-}: AppSidebarProps) {
-  const handleNavigate = (tab: string) => {
-    onTabChange(tab);
-    if (window.innerWidth < 1024) {
-      onClose();
-    }
-  };
+}) {
+  
 
   return (
     <aside
