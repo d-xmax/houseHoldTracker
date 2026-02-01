@@ -4,23 +4,37 @@ import {
   useRef,
   useState,
 } from 'react';
- 
+
 import {
   getTotalValue,
   validateItemForm,
   validateListForm,
 } from '@/utils/inventory-helpers';
+import type {
+  DeleteTarget,
+  InventoryList,
+  Item,
+  ListFormValues,
+  ItemFormValues,
+  Notification,
+} from '@/features/inventory/types';
+const INITIAL_LISTS: InventoryList[] = [];
 
-const INITIAL_LISTS  = [
-   
-];
-
-const DEFAULT_LIST_FORM   = {
-  
+const DEFAULT_LIST_FORM: ListFormValues = {
+  name: '',
+  description: '',
+  color: ''
 };
 
-const DEFAULT_ITEM_FORM   = {
-   
+const DEFAULT_ITEM_FORM: ItemFormValues = {
+    name: '',
+  description: '',
+  category: '',
+  price: '',
+  quantity: '',
+  unit: '',
+  location: '',
+  condition: 'Good',
 };
 
 export function useInventory() {
@@ -79,7 +93,7 @@ export function useInventory() {
 
   const showNotification = (
     type: Notification['type'],
-    message: string
+    message: string,
   ) => {
     if (notificationTimeout.current) {
       clearTimeout(notificationTimeout.current);
@@ -87,7 +101,7 @@ export function useInventory() {
     setNotification({ type, message });
     notificationTimeout.current = setTimeout(
       () => setNotification(null),
-      5000
+      5000,
     );
   };
 
@@ -101,9 +115,9 @@ export function useInventory() {
   const selectedList = useMemo(
     () =>
       lists.find(
-        (list) => list.id === selectedListId
+        (list) => list.id === selectedListId,
       ) ?? null,
-    [lists, selectedListId]
+    [lists, selectedListId],
   );
 
   const allCategories = useMemo(() => {
@@ -162,9 +176,9 @@ export function useInventory() {
       lists.reduce(
         (sum, list) =>
           sum + getTotalValue(list.items),
-        0
+        0,
       ),
-    [lists]
+    [lists],
   );
 
   const resetListForm = () =>
@@ -183,7 +197,7 @@ export function useInventory() {
     if (!selectedList) {
       showNotification(
         'error',
-        'Please select a list first'
+        'Please select a list first',
       );
       return;
     }
@@ -198,7 +212,7 @@ export function useInventory() {
     if (!selectedList) {
       showNotification(
         'error',
-        'Please select a list first'
+        'Please select a list first',
       );
       return;
     }
@@ -242,7 +256,7 @@ export function useInventory() {
     closeCreateListDialog();
     showNotification(
       'success',
-      `"${newList.name}" list has been created and is ready for your items.`
+      `"${newList.name}" list has been created and is ready for your items.`,
     );
   };
 
@@ -275,14 +289,14 @@ export function useInventory() {
                 editListForm.description.trim(),
               color: editListForm.color,
             }
-          : list
-      )
+          : list,
+      ),
     );
 
     closeEditListDialog();
     showNotification(
       'success',
-      `"${editListForm.name.trim()}" has been updated successfully.`
+      `"${editListForm.name.trim()}" has been updated successfully.`,
     );
   };
 
@@ -296,7 +310,7 @@ export function useInventory() {
     if (!selectedList) {
       showNotification(
         'error',
-        'Please select a list first'
+        'Please select a list first',
       );
       return;
     }
@@ -324,14 +338,14 @@ export function useInventory() {
               ...list,
               items: [...list.items, newItem],
             }
-          : list
-      )
+          : list,
+      ),
     );
 
     closeAddItemDialog();
     showNotification(
       'success',
-      `"${newItem.name}" has been added to ${selectedList.name}.`
+      `"${newItem.name}" has been added to ${selectedList.name}.`,
     );
   };
 
@@ -375,11 +389,11 @@ export function useInventory() {
                         editItemForm.category.trim(),
                       price:
                         Number.parseFloat(
-                          editItemForm.price
+                          editItemForm.price,
                         ) || 0,
                       quantity:
                         Number.parseInt(
-                          editItemForm.quantity
+                          editItemForm.quantity,
                         ) || 1,
                       unit: editItemForm.unit.trim(),
                       location:
@@ -387,17 +401,17 @@ export function useInventory() {
                       condition:
                         editItemForm.condition,
                     }
-                  : item
+                  : item,
               ),
             }
-          : list
-      )
+          : list,
+      ),
     );
 
     closeEditItemDialog();
     showNotification(
       'success',
-      `"${editItemForm.name.trim()}" has been updated successfully.`
+      `"${editItemForm.name.trim()}" has been updated successfully.`,
     );
   };
 
@@ -405,7 +419,7 @@ export function useInventory() {
     if (!selectedList || !bulkItems.trim()) {
       showNotification(
         'error',
-        'Please enter some items to add'
+        'Please enter some items to add',
       );
       return;
     }
@@ -451,8 +465,8 @@ export function useInventory() {
               ...list,
               items: [...list.items, ...newItems],
             }
-          : list
-      )
+          : list,
+      ),
     );
 
     closeBulkAddDialog();
@@ -464,7 +478,7 @@ export function useInventory() {
           : '';
       showNotification(
         'success',
-        `Added ${successCount} items successfully.${skipped}`
+        `Added ${successCount} items successfully.${skipped}`,
       );
     }
   };
@@ -476,13 +490,13 @@ export function useInventory() {
     ) {
       showNotification(
         'info',
-        'Please select a list with items to export'
+        'Please select a list with items to export',
       );
       return;
     }
     showNotification(
       'info',
-      "Export feature is coming soon! We're working hard to bring you this functionality."
+      "Export feature is coming soon! We're working hard to bring you this functionality.",
     );
   };
 
@@ -491,7 +505,7 @@ export function useInventory() {
     setSelectedCategory('All Categories');
     showNotification(
       'info',
-      'Search and filters have been cleared'
+      'Search and filters have been cleared',
     );
   };
 
@@ -500,7 +514,7 @@ export function useInventory() {
   };
 
   const requestDeleteList = (
-    list: InventoryList
+    list: InventoryList,
   ) => {
     setDeleteTarget({ type: 'list', list });
   };
@@ -517,21 +531,21 @@ export function useInventory() {
                 items: list.items.filter(
                   (item) =>
                     item.id !==
-                    deleteTarget.item.id
+                    deleteTarget.item.id,
                 ),
               }
-            : list
-        )
+            : list,
+        ),
       );
       showNotification(
         'success',
-        `"${deleteTarget.item.name}" has been removed from your list.`
+        `"${deleteTarget.item.name}" has been removed from your list.`,
       );
     } else {
       setLists((prev) => {
         const updated = prev.filter(
           (list) =>
-            list.id !== deleteTarget.list.id
+            list.id !== deleteTarget.list.id,
         );
         if (updated.length === 0) {
           setSelectedListId('');
@@ -544,7 +558,7 @@ export function useInventory() {
       });
       showNotification(
         'success',
-        `"${deleteTarget.list.name}" list has been deleted.`
+        `"${deleteTarget.list.name}" list has been deleted.`,
       );
     }
 

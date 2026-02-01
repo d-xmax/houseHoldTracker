@@ -18,14 +18,35 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import type { EditListModalTypes } from '../modalTypes';
+import type { EditListModalTypes } from '../types/modalTypes';
+ 
 
 const COLOR_OPTIONS = [
-  { value: 'blue', label: 'Blue' },
-  { value: 'green', label: 'Green' },
-  { value: 'purple', label: 'Purple' },
-  { value: 'red', label: 'Red' },
-  { value: 'yellow', label: 'Yellow' },
+  {
+    value: 'blue',
+    label: 'Blue',
+    swatchClass: 'bg-blue-500',
+  },
+  {
+    value: 'green',
+    label: 'Green',
+    swatchClass: 'bg-green-500',
+  },
+  {
+    value: 'purple',
+    label: 'Purple',
+    swatchClass: 'bg-purple-500',
+  },
+  {
+    value: 'red',
+    label: 'Red',
+    swatchClass: 'bg-red-500',
+  },
+  {
+    value: 'yellow',
+    label: 'Yellow',
+    swatchClass: 'bg-yellow-400',
+  },
 ];
 
 export function EditListModal({
@@ -36,6 +57,10 @@ export function EditListModal({
   onSave,
   listName,
 }: EditListModalTypes) {
+  const selectedColor = COLOR_OPTIONS.find(
+    (color) => color.value === form.color,
+  );
+
   return (
     <Dialog
       open={open}
@@ -123,7 +148,18 @@ export function EditListModal({
               }
             >
               <SelectTrigger className="bg-white border-slate-200 text-slate-900 focus-visible:ring-emerald-600">
-                <SelectValue />
+                <div className="flex items-center gap-2">
+                  {selectedColor && (
+                    <span
+                      className={`h-4 w-4 rounded-full border border-white shadow-inner ${selectedColor.swatchClass}`}
+                      aria-hidden="true"
+                    />
+                  )}
+                  <SelectValue placeholder="Select a color">
+                    {selectedColor?.label ??
+                      'Select a color'}
+                  </SelectValue>
+                </div>
               </SelectTrigger>
               <SelectContent className="bg-white border-slate-200">
                 {COLOR_OPTIONS.map((option) => (
@@ -131,7 +167,13 @@ export function EditListModal({
                     key={option.value}
                     value={option.value}
                   >
-                    {option.label}
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={`h-4 w-4 rounded-full border border-white shadow-inner ${option.swatchClass}`}
+                        aria-hidden="true"
+                      />
+                      {option.label}
+                    </div>
                   </SelectItem>
                 ))}
               </SelectContent>

@@ -10,6 +10,7 @@ import {
 import {
   getColorClasses, 
 } from '@/utils/inventory-helpers';
+import type { ListSidebarTypes } from './types/listSidebarTypes';
 
  
 
@@ -23,7 +24,7 @@ export function ListSidebar({
   onDeleteList,
   totalValue,
   isSearchActive,
-} ) {
+}: ListSidebarTypes ) {
   return (
     <aside className="w-full lg:w-64 flex flex-col gap-6">
       <Card className="border-none shadow-sm">

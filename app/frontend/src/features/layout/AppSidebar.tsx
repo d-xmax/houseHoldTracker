@@ -9,13 +9,32 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import type { AppSidebarTypes } from './types';
 
- 
 const MAIN_MENU = [
-  
+  {
+    id: 'inventory',
+    icon: Package2,
+    label: 'Grocery Planner',
+  },
 ];
 const GENERAL_MENU = [
-  
+  {
+    id: 'help',
+    icon: HelpCircle,
+    label: 'Help',
+  },
+  {
+    id: 'settings',
+    icon: Settings,
+    label: 'Settings',
+  },
+
+  {
+    id: 'logout',
+    icon: LogOut,
+    label: 'Logout',
+  },
 ];
 
 export function AppSidebar({
@@ -23,16 +42,14 @@ export function AppSidebar({
   onClose,
   activeTab,
   onTabChange,
-}) {
-  
-
+}: AppSidebarTypes) {
   return (
     <aside
       className={cn(
         'fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-slate-200 flex flex-col transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0',
         isOpen
           ? 'translate-x-0'
-          : '-translate-x-full'
+          : '-translate-x-full',
       )}
     >
       <div className="p-6 flex items-center justify-between">
@@ -70,7 +87,7 @@ export function AppSidebar({
                   'w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium transition-colors',
                   activeTab === item.id
                     ? 'bg-emerald-50 text-emerald-700'
-                    : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
+                    : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900',
                 )}
               >
                 <div className="flex items-center gap-3">
