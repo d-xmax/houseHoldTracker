@@ -60,7 +60,7 @@ export function EditListModal({
   const selectedColor = COLOR_OPTIONS.find(
     (color) => color.value === form.color,
   );
-
+ 
   return (
     <Dialog
       open={open}

@@ -89,7 +89,13 @@ export {
   rulesForAuth,
   rulesForUpdate,
 };
-
+const colorTypes = [
+  'blue',
+  'green',
+  'purple',
+  'red',
+  'yellow',
+]
 // List rules
 const rulesForCreateList = () => [
   body('name')
@@ -99,7 +105,8 @@ const rulesForCreateList = () => [
   body('description').optional().trim(),
   body('color')
     .trim()
-    .matches(/^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/)
+    .toLowerCase()
+    .isIn(colorTypes)
     .withMessage('Invalid color value'),
 ];
 
@@ -110,10 +117,10 @@ const rulesForUpdateList = () => [
     .withMessage('Not valid Id'),
   body('name').optional().trim(),
   body('description').optional().trim(),
-  body('color')
-    .optional()
+    body('color')
     .trim()
-    .matches(/^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/)
+    .toLowerCase()
+    .isIn(colorTypes)
     .withMessage('Invalid color value'),
 ];
 

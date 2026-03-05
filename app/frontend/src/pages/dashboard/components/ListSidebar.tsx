@@ -6,13 +6,10 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
- 
-import {
-  getColorClasses, 
-} from '@/utils/inventory-helpers';
-import type { ListSidebarTypes } from './types/listSidebarTypes';
 
- 
+import { getColorClasses } from '@/utils/inventory-helpers';
+import type { ListSidebarTypes } from './types/listSidebarTypes';
+import { useLists } from '@/hooks/useListsInfo';
 
 export function ListSidebar({
   lists,
@@ -24,7 +21,9 @@ export function ListSidebar({
   onDeleteList,
   totalValue,
   isSearchActive,
-}: ListSidebarTypes ) {
+}: ListSidebarTypes) {
+  const { data, isLoading, isFetching, isError, error } = useLists();
+   
   return (
     <aside className="w-full lg:w-64 flex flex-col gap-6">
       <Card className="border-none shadow-sm">
@@ -45,25 +44,25 @@ export function ListSidebar({
         </CardHeader>
         <CardContent className="px-2 pb-2">
           <div className="space-y-1">
-            {visibleLists.length === 0 ? (
+            {data?.readListCount === 0 ? (
               <div className="px-3 py-6 text-center text-xs text-slate-400">
                 {isSearchActive
                   ? 'No lists match your search.'
                   : 'Create a list to get started.'}
               </div>
             ) : (
-              visibleLists.map((list) => {
+              data?.readAll.map((list) => {
                 const isSelected =
-                  selectedListId === list.id;
+                  selectedListId === list?._id;
 
                 return (
                   <div
-                    key={list.id}
+                    key={list?._id}
                     role="button"
                     tabIndex={0}
                     aria-pressed={isSelected}
                     onClick={() =>
-                      onSelectList(list.id)
+                      onSelectList(list?._id)
                     }
                     onKeyDown={(event) => {
                       if (
@@ -71,7 +70,7 @@ export function ListSidebar({
                         event.key === ' '
                       ) {
                         event.preventDefault();
-                        onSelectList(list.id);
+                        onSelectList(list?._id);
                       }
                     }}
                     className={`group relative flex items-center justify-between px-3 py-2 rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 ${
@@ -83,24 +82,27 @@ export function ListSidebar({
                     <div className="flex-1 flex items-center gap-2 text-sm font-semibold text-left tracking-tight">
                       <div
                         className={`w-1.5 h-1.5 rounded-full ${getColorClasses(
-                          list.color
+                          list?.color,
                         )}`}
                       />
                       <span className="truncate">
-                        {list.name}
+                        {list?.name}
                       </span>
                     </div>
                     <div className="flex items-center gap-2 pl-3">
-                      <span
+
+                   
+                     {/* need to add item count here of each list
+                     <span
                         className={`inline-flex items-center justify-center min-w-[26px] text-[10px] tracking-wide px-1 py-0  rounded-md transition-all ${
                           isSelected
                             ? 'bg-emerald-600 text-white shadow-sm'
                             : 'bg-slate-200 text-slate-600 group-hover:bg-slate-300'
                         }`}
-                        aria-label={`${list.items.length} items in ${list.name}`}
+                        aria-label={`${list}  ${list?.name}`}
                       >
-                        {list.items.length}
-                      </span>
+                        {list?.name}
+                      </span>  */}
                       <Button
                         variant="ghost"
                         size="icon"
@@ -137,7 +139,7 @@ export function ListSidebar({
           Total Active Lists
         </p>
         <h4 className="text-2xl font-bold">
-          {lists.length}
+          {data?.readListCount}
         </h4>
         <p className="text-[10px] text-emerald-400 mt-2">
           Inventory Value: $

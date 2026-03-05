@@ -18,7 +18,7 @@ export interface Item {
 }
 
 export interface InventoryList {
-  id: string;
+  _id: string;
   name: string;
   description: string;
   color: string;

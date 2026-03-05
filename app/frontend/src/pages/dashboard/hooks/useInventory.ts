@@ -10,6 +10,7 @@ import {
   validateItemForm,
   validateListForm,
 } from '@/utils/inventory-helpers';
+import { useLists } from '@/hooks/useLists';
 import type {
   DeleteTarget,
   InventoryList,
@@ -17,17 +18,17 @@ import type {
   ListFormValues,
   ItemFormValues,
   Notification,
-} from '@/features/inventory/types';
+} from '@/pages/dashboard/types';
 const INITIAL_LISTS: InventoryList[] = [];
 
 const DEFAULT_LIST_FORM: ListFormValues = {
   name: '',
   description: '',
-  color: ''
+  color: '',
 };
 
 const DEFAULT_ITEM_FORM: ItemFormValues = {
-    name: '',
+  name: '',
   description: '',
   category: '',
   price: '',
@@ -42,7 +43,7 @@ export function useInventory() {
     InventoryList[]
   >(INITIAL_LISTS);
   const [selectedListId, setSelectedListId] =
-    useState(() => INITIAL_LISTS[0]?.id ?? '');
+    useState(() => INITIAL_LISTS[0]?._id ?? '');
   const [searchQuery, setSearchQuery] =
     useState('');
   const [listSearchQuery, setListSearchQuery] =
@@ -83,6 +84,12 @@ export function useInventory() {
   const [deleteTarget, setDeleteTarget] =
     useState<DeleteTarget>(null);
 
+  const {
+    updateListMutation,
+    deleteListMutation,
+    createListMutation,
+  } = useLists();
+
   useEffect(() => {
     return () => {
       if (notificationTimeout.current) {
@@ -115,7 +122,7 @@ export function useInventory() {
   const selectedList = useMemo(
     () =>
       lists.find(
-        (list) => list.id === selectedListId,
+        (list) => list._id === selectedListId,
       ) ?? null,
     [lists, selectedListId],
   );
@@ -232,45 +239,55 @@ export function useInventory() {
   const closeEditListDialog = () => {
     setEditListOpen(false);
     setListToEdit(null);
-    setEditListForm(DEFAULT_LIST_FORM);
   };
 
-  const createList = () => {
+  const createList = async () => {
     const error = validateListForm(newListForm);
     if (error) {
       showNotification('error', error);
       return;
     }
 
-    const newList: InventoryList = {
-      id: Date.now().toString(),
+    const listData = {
       name: newListForm.name.trim(),
       description: newListForm.description.trim(),
       color: newListForm.color,
-      items: [],
-      createdDate: new Date().toISOString(),
     };
 
-    setLists((prev) => [...prev, newList]);
-    setSelectedListId(newList.id);
-    closeCreateListDialog();
-    showNotification(
-      'success',
-      `"${newList.name}" list has been created and is ready for your items.`,
-    );
+    createListMutation.mutate(listData, {
+      onSuccess: (createdList) => {
+        // Optionally update local state if needed, or rely on query invalidation
+        setSelectedListId(createdList.id);
+        console.log(createdList)
+        closeCreateListDialog();
+        showNotification(
+          'success',
+          `"${createdList.name}" list has been created and is ready for your items.`,
+        );
+      },
+      onError: (err) => {
+        const message =
+          err instanceof Error
+            ? err.message
+            : 'Failed to create list';
+        showNotification('error', message);
+      },
+    });
   };
-
+  // open edit form for edit list and pre-fill the form with selected list data
   const openEditList = (list: InventoryList) => {
     setListToEdit(list);
+    // pre fill
     setEditListForm({
       name: list.name,
       description: list.description,
       color: list.color,
     });
+
     setEditListOpen(true);
   };
-
-  const saveListChanges = () => {
+  // save list changes to the list and update the list in the state, then close the edit form
+  const saveListChanges = async () => {
     if (!listToEdit) return;
 
     const error = validateListForm(editListForm);
@@ -279,24 +296,32 @@ export function useInventory() {
       return;
     }
 
-    setLists((prev) =>
-      prev.map((list) =>
-        list.id === listToEdit.id
-          ? {
-              ...list,
-              name: editListForm.name.trim(),
-              description:
-                editListForm.description.trim(),
-              color: editListForm.color,
-            }
-          : list,
-      ),
-    );
-
-    closeEditListDialog();
-    showNotification(
-      'success',
-      `"${editListForm.name.trim()}" has been updated successfully.`,
+    const updatedData = {
+      name: editListForm.name.trim(),
+      description:
+        editListForm.description.trim(),
+      color: editListForm.color,
+    };
+    // data mutation
+    updateListMutation.mutate(
+      { id: listToEdit?._id, updatedData },
+      {
+        onSuccess: () => {
+          closeEditListDialog();
+          console.log(updatedData);
+          showNotification(
+            'success',
+            `${editListForm.name.trim()} has been updated successfully.`,
+          );
+        },
+        onError: (err: unknown) => {
+          const message =
+            err instanceof Error
+              ? err.message
+              : 'Failed to update list';
+          showNotification('error', message);
+        },
+      },
     );
   };
 
@@ -333,7 +358,7 @@ export function useInventory() {
 
     setLists((prev) =>
       prev.map((list) =>
-        list.id === selectedListId
+        list._id === selectedListId
           ? {
               ...list,
               items: [...list.items, newItem],
@@ -375,7 +400,7 @@ export function useInventory() {
 
     setLists((prev) =>
       prev.map((list) =>
-        list.id === selectedListId
+        list._id === selectedListId
           ? {
               ...list,
               items: list.items.map((item) =>
@@ -460,7 +485,7 @@ export function useInventory() {
 
     setLists((prev) =>
       prev.map((list) =>
-        list.id === selectedListId
+        list._id === selectedListId
           ? {
               ...list,
               items: [...list.items, ...newItems],
@@ -525,7 +550,7 @@ export function useInventory() {
     if (deleteTarget.type === 'item') {
       setLists((prev) =>
         prev.map((list) =>
-          list.id === selectedListId
+          list._id === selectedListId
             ? {
                 ...list,
                 items: list.items.filter(
@@ -541,28 +566,45 @@ export function useInventory() {
         'success',
         `"${deleteTarget.item.name}" has been removed from your list.`,
       );
-    } else {
-      setLists((prev) => {
-        const updated = prev.filter(
-          (list) =>
-            list.id !== deleteTarget.list.id,
-        );
-        if (updated.length === 0) {
-          setSelectedListId('');
-        } else if (
-          deleteTarget.list.id === selectedListId
-        ) {
-          setSelectedListId(updated[0].id);
-        }
-        return updated;
-      });
-      showNotification(
-        'success',
-        `"${deleteTarget.list.name}" list has been deleted.`,
+      setDeleteTarget(null);
+    } else if (deleteTarget.type === 'list') {
+      // Use the deleteListMutation from useLists
+      deleteListMutation.mutate(
+        deleteTarget.list._id,
+        {
+          onSuccess: () => {
+            setLists((prev) => {
+              const updated = prev.filter(
+                (list) =>
+                  list._id !==
+                  deleteTarget.list._id,
+              );
+              if (updated.length === 0) {
+                setSelectedListId('');
+              } else if (
+                deleteTarget.list._id ===
+                selectedListId
+              ) {
+                setSelectedListId(updated[0]._id);
+              }
+              return updated;
+            });
+            showNotification(
+              'success',
+              `"${deleteTarget.list.name}" list has been deleted.`,
+            );
+            setDeleteTarget(null);
+          },
+          onError: (err) => {
+            const message =
+              err instanceof Error
+                ? err.message
+                : 'Failed to delete list';
+            showNotification('error', message);
+          },
+        },
       );
     }
-
-    setDeleteTarget(null);
   };
 
   const cancelDelete = () =>

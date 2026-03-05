@@ -48,9 +48,7 @@ export function AddItemModal({
         </DialogHeader>
         <div className="space-y-6 py-4">
           <div className="space-y-3">
-            <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-              Basic Details
-            </p>
+             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label
@@ -80,7 +78,7 @@ export function AddItemModal({
                   htmlFor="description"
                   className="text-slate-700"
                 >
-                  Description (Optional)
+                  Description
                 </Label>
                 <Input
                   id="description"
@@ -100,16 +98,14 @@ export function AddItemModal({
           </div>
 
           <div className="space-y-3">
-            <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-              Organization
-            </p>
+             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label
                   htmlFor="category"
                   className="text-slate-700"
                 >
-                  Category (Optional)
+                  Category
                 </Label>
                 <Input
                   id="category"
@@ -130,7 +126,7 @@ export function AddItemModal({
                   htmlFor="location"
                   className="text-slate-700"
                 >
-                  Location (Optional)
+                  Location
                 </Label>
                 <Input
                   id="location"
@@ -150,9 +146,7 @@ export function AddItemModal({
           </div>
 
           <div className="space-y-3">
-            <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-              Inventory Details
-            </p>
+             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="grid gap-2">
                 <Label
@@ -207,7 +201,7 @@ export function AddItemModal({
                   htmlFor="price"
                   className="text-slate-700"
                 >
-                  Price (Optional)
+                  Price
                 </Label>
                 <Input
                   id="price"
@@ -230,7 +224,7 @@ export function AddItemModal({
                   htmlFor="condition"
                   className="text-slate-700"
                 >
-                  Condition (Optional)
+                  Condition
                 </Label>
                 <Select
                   value={form.condition}

@@ -9,13 +9,15 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import type { AppSidebarTypes } from './types';
+import type { DashboardSidebarProps } from './types/layoutTypes';
+import {  NavLink } from 'react-router-dom';
 
 const MAIN_MENU = [
   {
     id: 'inventory',
     icon: Package2,
     label: 'Grocery Planner',
+    link: 'grocery-planner'
   },
 ];
 const GENERAL_MENU = [
@@ -23,26 +25,30 @@ const GENERAL_MENU = [
     id: 'help',
     icon: HelpCircle,
     label: 'Help',
+    link: 'grocery-planner/help'
   },
   {
     id: 'settings',
     icon: Settings,
     label: 'Settings',
+    link: 'grocery-planner/settings' 
   },
 
   {
     id: 'logout',
     icon: LogOut,
     label: 'Logout',
+    link: 'grocery-planner/logout'
   },
 ];
 
-export function AppSidebar({
+export function DashboardSidebar({
   isOpen,
   onClose,
   activeTab,
-  onTabChange,
-}: AppSidebarTypes) {
+ 
+}: DashboardSidebarProps) {
+   
   return (
     <aside
       className={cn(
@@ -78,11 +84,10 @@ export function AppSidebar({
           </p>
           <div className="space-y-1">
             {MAIN_MENU.map((item) => (
-              <button
+              <NavLink
                 key={item.id}
-                onClick={() =>
-                  handleNavigate(item.id)
-                }
+                to={item.link}
+                 
                 className={cn(
                   'w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium transition-colors',
                   activeTab === item.id
@@ -93,8 +98,9 @@ export function AppSidebar({
                 <div className="flex items-center gap-3">
                   <item.icon className="w-5 h-5" />
                   {item.label}
+
                 </div>
-              </button>
+              </NavLink>
             ))}
           </div>
         </div>
@@ -105,16 +111,16 @@ export function AppSidebar({
           </p>
           <div className="space-y-1">
             {GENERAL_MENU.map((item) => (
-              <button
+              <NavLink
+              to={item.link}
                 key={item.id}
-                onClick={() =>
-                  handleNavigate(item.id)
-                }
+                
                 className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors"
               >
                 <item.icon className="w-5 h-5" />
                 {item.label}
-              </button>
+                
+              </NavLink>
             ))}
           </div>
         </div>

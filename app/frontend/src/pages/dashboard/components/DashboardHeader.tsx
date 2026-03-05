@@ -11,16 +11,18 @@ import {
   AvatarFallback,
   AvatarImage,
 } from '@/components/ui/avatar';
-import type { AppHeaderTypes } from './types';
+import type { DashboardHeaderProps } from './types/layoutTypes';
+import { useUserInfo } from '@/hooks/useUserInfo';
 
- 
-export function AppHeader({
+export function DashboardHeader({
   searchValue,
   onSearchChange,
   onMenuClick,
-}: AppHeaderTypes) {
+}: DashboardHeaderProps) {
+ const {data} = useUserInfo()
+   
   return (
-    <header className="h-16 flex items-center justify-between px-6 bg-transparent pt-4 lg:pt-0">
+    <header className="h-16 flex items-center justify-between px-6 bg-transparent pt-4 lg:pt-4">
       <div className="flex items-center gap-4 lg:hidden">
         <Button
           variant="ghost"
@@ -73,10 +75,10 @@ export function AppHeader({
         <div className="flex items-center gap-3 pl-4 border-l border-slate-200">
           <div className="text-right hidden sm:block">
             <p className="text-sm font-semibold text-slate-900 leading-none">
-              Totok Michael
+              {data?.name}
             </p>
             <p className="text-xs text-slate-400 mt-1">
-              tmichael20@mail.com
+              {data?.email}
             </p>
           </div>
           <Avatar className="w-9 h-9">
