@@ -8,14 +8,14 @@ import Item from '../../model/itemModel.js';
 const createItem = asyncHandler(
   async (req, res) => {
     const userId = req.user._id;
-    const listId = req.params.listId  
+    const listId = req.params.listId;
 
     const {
       name,
       category,
       quantity,
       quantityType,
-      description,   
+      description,
       price,
       location,
       dop,
@@ -23,9 +23,9 @@ const createItem = asyncHandler(
     if (!userId || userId === null) {
       res.status(401);
       throw Error(
-        'User not found please sign in again' 
+        'User not found please sign in again',
       );
-    } 
+    }
     if (!listId || listId === null) {
       res.status(400);
       throw new Error('No list found');
@@ -47,14 +47,43 @@ const createItem = asyncHandler(
     res
       .status(200)
       .json(
-        `Item added to the list ${listId} successful`
+        `Item added to the list ${listId} successful`,
       );
 
-    if(!item){
-      res.status(500)
-      throw Error('Item adding fail please try again')
-    }  
-  }
+    if (!item) {
+      res.status(500);
+      throw Error(
+        'Item adding fail please try again',
+      );
+    }
+  },
 );
+// @desc add item to the list
+// @path GET /api/:listId/item
+// @access Public
 
-export { createItem };
+const getAllItem = asyncHandler(
+  async (req, res) => {
+    const listId = req.params.listId;
+
+    if (!listId || listId === null) {
+      res.status(400);
+      throw new Error('No list found');
+    }
+
+    const items = await Item.find({ listId });
+
+    if (!items) {
+      res.status(500);
+      throw Error(
+        'Not found items for this list',
+      );
+    }
+    res.status(200).json({
+      items,
+      count: items.length,
+      message: `Get all items for the list ${listId} successful`,
+    });
+  },
+);
+export { createItem, getAllItem };
