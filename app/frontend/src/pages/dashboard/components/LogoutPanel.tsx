@@ -10,6 +10,8 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { useLogout } from '@/hooks/useLogout';
+import { useNavigate } from 'react-router-dom';
 
 interface LogoutPanelProps {
   userName?: string;
@@ -30,6 +32,29 @@ export function LogoutPanel({
   onCancel,
   isProcessing,
 }: LogoutPanelProps) {
+  const navigate = useNavigate();
+  const { logoutMutation } = useLogout();
+
+  const handleConfirm = () => {
+    if (onConfirm) {
+      onConfirm();
+      return;
+    }
+    logoutMutation.mutate();
+  };
+
+  const handleCancel = () => {
+    if (onCancel) {
+      onCancel();
+      return;
+    }
+    navigate('/grocery-planner', { replace: true });
+  };
+
+  const isBusy =
+    Boolean(isProcessing) ||
+    logoutMutation.isPending;
+
   return (
     <section className="space-y-6">
       <Card className="border-red-100 bg-red-50/40">
@@ -66,17 +91,17 @@ export function LogoutPanel({
           <Button
             variant="outline"
             className="flex-1"
-            onClick={onCancel}
+            onClick={handleCancel}
           >
             Stay logged in
           </Button>
           <Button
             className="flex-1 bg-red-600 hover:bg-red-500"
-            onClick={onConfirm}
-            disabled={isProcessing}
+            onClick={handleConfirm}
+            disabled={isBusy}
           >
             <LogOut className="mr-2 h-4 w-4" />
-            {isProcessing
+            {isBusy
               ? 'Signing out…'
               : 'Logout now'}
           </Button>

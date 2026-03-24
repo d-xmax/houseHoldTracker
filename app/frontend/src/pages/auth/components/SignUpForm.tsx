@@ -1,7 +1,9 @@
 import {
+  useState,
+} from 'react';
+import type {
   ChangeEvent,
   FormEvent,
-  useState,
 } from 'react';
 import {
   Card,
@@ -15,6 +17,7 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
+import { useRegister } from '@/hooks/useRegister';
 
 export type SignUpValues = {
   email: string;
@@ -26,15 +29,12 @@ type SignUpErrors = Partial<
   Record<keyof SignUpValues, string>
 >;
 
-type StatusState =
-  | { type: 'success'; message: string }
-  | { type: 'error'; message: string }
-  | null;
+type StatusState = {
+  type: 'success' | 'error';
+  message: string;
+} | null;
 
 type SignUpFormProps = {
-  onSubmit?: (
-    values: SignUpValues,
-  ) => Promise<void> | void;
   title?: string;
   subtitle?: string;
   signInHref?: string;
@@ -47,11 +47,11 @@ const initialValues: SignUpValues = {
 };
 
 export function SignUpForm({
-  onSubmit,
   title = 'Create your household profile',
   subtitle = 'Sign up to collaborate on grocery lists, pantry stock, and shared reminders.',
-  signInHref = '#signin-form',
+  signInHref = '/login',
 }: SignUpFormProps) {
+  const { registerMutation } = useRegister();
   const [values, setValues] =
     useState<SignUpValues>(initialValues);
   const [errors, setErrors] =
@@ -112,7 +112,29 @@ export function SignUpForm({
     return nextErrors;
   };
 
-  const handleSubmit = async (
+  const getMutationErrorMessage = (
+    error: unknown,
+  ) => {
+    if (
+      typeof error === 'object' &&
+      error !== null &&
+      'response' in error
+    ) {
+      return (
+        (error as {
+          response?: {
+            data?: { message?: string };
+          };
+        }).response?.data?.message ||
+        (error as { message?: string }).message
+      );
+    }
+
+    return (error as { message?: string })
+      ?.message;
+  };
+
+  const handleSubmit = (
     event: FormEvent<HTMLFormElement>,
   ) => {
     event.preventDefault();
@@ -129,31 +151,36 @@ export function SignUpForm({
 
     setIsSubmitting(true);
 
-    try {
-      if (onSubmit) {
-        await onSubmit(values);
-      } else {
-        await new Promise((resolve) =>
-          setTimeout(resolve, 600),
-        );
-      }
+    registerMutation.mutate(
+      {
+        name: values.username.trim(),
+        email: values.email.trim(),
+        password: values.password,
+      },
+      {
+        onSuccess: () => {
+          setStatus({
+            type: 'success',
+            message:
+              'Account created successfully. Redirecting to sign in...',
+          });
+        },
+        onError: (error) => {
+          const message =
+            getMutationErrorMessage(error);
 
-      setStatus({
-        type: 'success',
-        message:
-          'Account created! Sign in below to start organizing.',
-      });
-      setValues(initialValues);
-    } catch (error) {
-      console.error('Sign up failed', error);
-      setStatus({
-        type: 'error',
-        message:
-          'Sign up failed. Please try again in a moment.',
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
+          setStatus({
+            type: 'error',
+            message:
+              message ||
+              'Unable to create account. Please try again.',
+          });
+        },
+        onSettled: () => {
+          setIsSubmitting(false);
+        },
+      },
+    );
   };
 
   return (
@@ -310,9 +337,13 @@ export function SignUpForm({
             <Button
               type="submit"
               className="w-full"
-              disabled={isSubmitting}
+              disabled={
+                isSubmitting ||
+                registerMutation.isPending
+              }
             >
-              {isSubmitting
+              {isSubmitting ||
+              registerMutation.isPending
                 ? 'Creating account…'
                 : 'Create account'}
             </Button>
@@ -323,7 +354,7 @@ export function SignUpForm({
           <span>
             Already registered?
             <Link
-             to={"/login"}
+             to={signInHref}
               className="ml-2 font-semibold text-primary hover:underline"
             >
               Go to sign in

@@ -5,10 +5,11 @@ import {
   getItem,
   updateItem,
 } from '../controllers/itemController/itemController.js';
-import { createItem } from '../controllers/itemController/itemControllerWithListParam.js';
+import { createItem, getAllItem } from '../controllers/itemController/itemControllerWithListParam.js';
 import {
   rulesForDeleteItem,
   rulesForGetItem,
+  rulesForGetAllItem,
   rulesForListParam,
   rulesForUpdateItem,
 } from '../utils/rules.js';
@@ -23,22 +24,36 @@ const itemParamRouter = express.Router({
   mergeParams: true,
 }); //use to set items belongs to the list
 
-itemParamRouter.post(
-  '/item',
-  protect,
-  rulesForListParam(),
-  validation,
-  createItem
-);
+itemParamRouter
+  .route('/item')
+  .post(
+    protect,
+    rulesForListParam(),
+    validation,
+    createItem,
+  )
+  .get(
+    protect,
+    rulesForGetAllItem(),
+    validation,
+    getAllItem,
+  );
 itemRouter
   .route('/:itemId')
-  .get(rulesForGetItem(), validation, getItem)
+  .get(
+    protect,
+    rulesForGetItem(),
+    validation,
+    getItem
+  )
   .put(
+    protect,
     rulesForUpdateItem(),
     validation,
     updateItem
   )
   .delete(
+    protect,
     rulesForDeleteItem(),
     validation,
     deleteItem

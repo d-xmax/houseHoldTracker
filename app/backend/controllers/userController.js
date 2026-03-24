@@ -25,7 +25,7 @@ const userRegister = asyncHandler(
         message: 'User register successful',
       });
     }
-  }
+  },
 );
 
 // @desc authenticate user
@@ -35,7 +35,7 @@ const userRegister = asyncHandler(
 const userSetAuth = asyncHandler(
   async (req, res) => {
     const { email, password } = req.body;
-    console.log(email)
+    console.log(email);
     const user = await User.findOne({
       email,
     });
@@ -44,16 +44,21 @@ const userSetAuth = asyncHandler(
       user &&
       (await user.matchPassword(password))
     ) {
-      generateToken(res, user._id);
-      res.status(201).json({
-        name: user.name,
-        email: user.email,
+      const token = generateToken(user._id);
+      res.status(200).json({
+        token,
+        user: {
+          _id: user._id,
+          name: user.name,
+          email: user.email,
+        },
+        message: 'User authenticated',
       });
     } else {
       res.status(400);
       throw new Error('Invalid user details');
     }
-  }
+  },
 );
 
 // @desc logout user
@@ -66,7 +71,7 @@ const userLogout = asyncHandler(
     res.status(200).json({
       message: 'cookie cleared',
     });
-  }
+  },
 );
 
 // @desc update user info
@@ -76,7 +81,9 @@ const userLogout = asyncHandler(
 const userUpdate = asyncHandler(
   async (req, res) => {
     const { name, email, password } = req.body;
-    const user = await User.findById(req.user._id)
+    const user = await User.findById(
+      req.user._id,
+    );
     if (user) {
       user.email = email || user.email;
       user.name = name || user.name;
@@ -95,7 +102,7 @@ const userUpdate = asyncHandler(
       res.status(404);
       throw new Error('User not found');
     }
-  }
+  },
 );
 
 // @desc get user info
@@ -111,7 +118,7 @@ const userProfile = asyncHandler(
     };
 
     res.status(200).json(user);
-  }
+  },
 );
 
 export {

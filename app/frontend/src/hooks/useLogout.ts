@@ -1,23 +1,17 @@
-import { loginUser } from '@/api/login';
+import { logoutUser } from '@/api/login';
 import {
-  useQueryClient,
   useMutation,
+  useQueryClient,
 } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-type dataType = {
-  email: string;
-  password: string;
-};
 
-export function useLogin() {
+export function useLogout() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
-  // login mutation + call get user
-  const loginMutation = useMutation({
-    mutationFn: (data: dataType) =>
-      loginUser(data),
-    onMutate: async () => {
+  const logoutMutation = useMutation({
+    mutationFn: logoutUser,
+    onSuccess: async () => {
       sessionStorage.removeItem('accessToken');
 
       await queryClient.cancelQueries({
@@ -30,27 +24,21 @@ export function useLogin() {
         queryKey: ['items'],
       });
 
-      queryClient.setQueryData(
-        ['userInfo'],
-        null,
-      );
+      queryClient.removeQueries({
+        queryKey: ['userInfo'],
+      });
       queryClient.removeQueries({
         queryKey: ['lists'],
       });
       queryClient.removeQueries({
         queryKey: ['items'],
       });
+
+      navigate('/login', { replace: true });
     },
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({
-        queryKey: ['userInfo'],
-      });
-      navigate('/grocery-planner');
-    },
-    onError: (error) => console.log(error),
   });
 
   return {
-    loginMutation,
+    logoutMutation,
   };
 }

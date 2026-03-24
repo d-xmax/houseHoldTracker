@@ -1,7 +1,7 @@
 import { getLists } from '@/api/lists';
 import { useQuery } from '@tanstack/react-query';
 
-export function useLists() {
+export function useListsInfo(userId?: string) {
   const {
     data,
     isLoading,
@@ -9,16 +9,17 @@ export function useLists() {
     isError,
     error,
   } = useQuery({
-    queryKey: ['lists'],
+    queryKey: ['lists', userId],
     queryFn: getLists,
-    staleTime: 1000 * 60 * 5, 
+    staleTime: 1000 * 60 * 5,
+    enabled: Boolean(userId),
   });
 
   return {
-    data,
-    isLoading,
-    isFetching,
-    isError,
-    error
+    listData: data,
+    isLoadingListData: isLoading,
+    isFetchingListData: isFetching,
+    isErrorListData: isError,
+    errorListData: error,
   };
 }

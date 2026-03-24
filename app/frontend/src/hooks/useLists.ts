@@ -8,15 +8,26 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 
-export function useLists() {
+type ListPayload = {
+  name: string;
+  description: string;
+  color: string;
+};
+
+type UpdateListPayload = {
+  id: string;
+  updatedData: Record<string, unknown>;
+};
+
+export function useLists(userId?: string) {
   const queryClient = useQueryClient();
   const createListMutation = useMutation({
-    mutationFn: (listdata) => {
-      return createList(listdata);
+    mutationFn: (listData: ListPayload) => {
+      return createList(listData);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['lists'],
+        queryKey: ['lists', userId],
       });
     },
   });
@@ -24,26 +35,23 @@ export function useLists() {
     mutationFn: ({
       id,
       updatedData,
-    }: {
-      id: string;
-      updatedData: any;
-    }) => {
+    }: UpdateListPayload) => {
       return updateList(id, updatedData);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['lists'],
+        queryKey: ['lists', userId],
       });
     },
   });
 
   const deleteListMutation = useMutation({
-    mutationFn: (id) => {
+    mutationFn: (id: string) => {
       return deleteList(id);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['lists'],
+        queryKey: ['lists', userId],
       });
     },
   });

@@ -1,5 +1,6 @@
 import asyncHandler from 'express-async-handler';
 import Item from '../../model/itemModel.js';
+import List from '../../model/listModel.js';
 import _ from 'lodash';
 
 // @desc show one item from the list
@@ -8,6 +9,7 @@ import _ from 'lodash';
 
 const getItem = asyncHandler(async (req, res) => {
   const { itemId } = req.params;
+  const userId = req.user._id;
 
   if (!itemId || itemId === null) {
     res.status(400);
@@ -16,6 +18,22 @@ const getItem = asyncHandler(async (req, res) => {
   const item = await Item.findById({
     _id: itemId,
   });
+
+  if (!item) {
+    res.status(404);
+    throw new Error('Item not found');
+  }
+
+  const ownedList = await List.findOne({
+    _id: item.listId,
+    userId,
+  }).lean();
+
+  if (!ownedList) {
+    res.status(404);
+    throw new Error('Item not found');
+  }
+
   if (!item || item === null) {
     res.status(500);
     throw new Error(
@@ -31,6 +49,7 @@ const getItem = asyncHandler(async (req, res) => {
 const updateItem = asyncHandler(
   async (req, res) => {
     const { itemId } = req.params;
+    const userId = req.user._id;
     const reqItems = req.body;
     if (!itemId || itemId === null) {
       res.status(400);
@@ -51,6 +70,16 @@ const updateItem = asyncHandler(
       throw new Error(
         'Not found items to update'
       );
+    }
+
+    const ownedList = await List.findOne({
+      _id: exItem.listId,
+      userId,
+    }).lean();
+
+    if (!ownedList) {
+      res.status(404);
+      throw new Error('Item not found');
     }
 
     // type conversion
@@ -129,10 +158,31 @@ const updateItem = asyncHandler(
 const deleteItem = asyncHandler(
   async (req, res) => {
     const itemId = req.params.itemId;
+    const userId = req.user._id;
     if(itemId===null || !itemId){
       res.status(400)
       throw new Error("No item found")
     }
+
+    const item = await Item.findById({
+      _id: itemId,
+    }).lean();
+
+    if (!item) {
+      res.status(404);
+      throw new Error('Item not found');
+    }
+
+    const ownedList = await List.findOne({
+      _id: item.listId,
+      userId,
+    }).lean();
+
+    if (!ownedList) {
+      res.status(404);
+      throw new Error('Item not found');
+    }
+
     const deletedItem =
       await Item.findByIdAndDelete({
         _id: itemId,

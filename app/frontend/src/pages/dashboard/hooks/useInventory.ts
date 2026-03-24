@@ -4,13 +4,17 @@ import {
   useRef,
   useState,
 } from 'react';
+import { AxiosError } from 'axios';
 
 import {
   getTotalValue,
   validateItemForm,
   validateListForm,
 } from '@/utils/inventory-helpers';
+import { exportSelectedListPdf } from '@/utils/export-list-pdf';
 import { useLists } from '@/hooks/useLists';
+import { useListsInfo } from '@/hooks/useListsInfo';
+import { useUserInfo } from '@/hooks/useUserInfo';
 import type {
   DeleteTarget,
   InventoryList,
@@ -19,6 +23,8 @@ import type {
   ItemFormValues,
   Notification,
 } from '@/pages/dashboard/types';
+import { useItems } from '@/hooks/useItems';
+import { useItemsInfo } from '@/hooks/useItemsInfo';
 const INITIAL_LISTS: InventoryList[] = [];
 
 const DEFAULT_LIST_FORM: ListFormValues = {
@@ -38,10 +44,9 @@ const DEFAULT_ITEM_FORM: ItemFormValues = {
   condition: 'Good',
 };
 
+const NOTIFICATION_DURATION_MS = 2000;
+
 export function useInventory() {
-  const [lists, setLists] = useState<
-    InventoryList[]
-  >(INITIAL_LISTS);
   const [selectedListId, setSelectedListId] =
     useState(() => INITIAL_LISTS[0]?._id ?? '');
   const [searchQuery, setSearchQuery] =
@@ -84,12 +89,28 @@ export function useInventory() {
   const [deleteTarget, setDeleteTarget] =
     useState<DeleteTarget>(null);
 
+  const { data: userInfo } = useUserInfo();
+  const userId = userInfo?._id;
+
   const {
     updateListMutation,
     deleteListMutation,
     createListMutation,
-  } = useLists();
+  } = useLists(userId);
+   
+  const { createItemMutation , deleteItemMutation, updateItemMutation} = useItems(userId);
+  const { listData, isLoadingListData } = useListsInfo(userId);
+  const { itemData, isItemDataLoading } = useItemsInfo(userId, selectedListId);
 
+  const lists = useMemo<InventoryList[]>(
+    () =>
+      Array.isArray(listData?.readAll)
+        ? listData.readAll
+        : [],
+    [listData],
+  );
+
+ 
   useEffect(() => {
     return () => {
       if (notificationTimeout.current) {
@@ -105,10 +126,14 @@ export function useInventory() {
     if (notificationTimeout.current) {
       clearTimeout(notificationTimeout.current);
     }
-    setNotification({ type, message });
+    setNotification({
+      type,
+      message,
+      durationMs: NOTIFICATION_DURATION_MS,
+    });
     notificationTimeout.current = setTimeout(
       () => setNotification(null),
-      5000,
+      NOTIFICATION_DURATION_MS,
     );
   };
 
@@ -118,19 +143,73 @@ export function useInventory() {
     }
     setNotification(null);
   };
+  // server response 
+  const getServerMessage = (
+    resMessage: unknown,
+  ): string | null => {
+    if (typeof resMessage === 'string') {
+     
+      return resMessage;
+    }
+
+    if (
+      resMessage &&
+      typeof resMessage === 'object' &&
+      'message' in resMessage
+    ) {
+      const message = (
+        resMessage as { message?: unknown }
+      ).message;
+      console.log(message)
+      return typeof message === 'string'
+        ? message
+        : null;
+    }
+
+    return null;
+  };
+// server error response
+  const getErrorMessage = (
+    error: unknown,
+    fallback: string,
+  ) => {
+    if (error instanceof AxiosError) {
+      const serverMessage = getServerMessage(
+        error.response?.data,
+      );
+
+      if (serverMessage) {
+        return serverMessage;
+      }
+    }
+
+    if (
+      error instanceof Error &&
+      typeof error.message === 'string' &&
+      error.message.trim().length > 0
+    ) {
+      return error.message;
+    }
+
+    return fallback;
+  };
 
   const selectedList = useMemo(
     () =>
       lists.find(
-        (list) => list._id === selectedListId,
+        (list) => list?._id === selectedListId,
       ) ?? null,
     [lists, selectedListId],
   );
-
+ 
   const allCategories = useMemo(() => {
     const categories = new Set<string>();
     lists.forEach((list) => {
-      list.items.forEach((item) => {
+      const items = Array.isArray(list?.items)
+        ? list.items
+        : [];
+
+      items.forEach((item) => {
         if (item.category) {
           categories.add(item.category);
         }
@@ -140,49 +219,25 @@ export function useInventory() {
   }, [lists]);
 
   const filteredLists = useMemo(() => {
-    const query = listSearchQuery
-      .trim()
-      .toLowerCase();
-    if (!query) return lists;
-
-    return lists.filter((list) => {
-      const haystack = `${list.name} ${
-        list.description ?? ''
-      }`.toLowerCase();
-      return haystack.includes(query);
-    });
-  }, [lists, listSearchQuery]);
+    return lists;
+  }, [lists]);
 
   const filteredItems = useMemo(() => {
-    if (!selectedList) return [];
-
-    return selectedList.items.filter((item) => {
-      const matchesSearch =
-        searchQuery === '' ||
-        item.name
-          .toLowerCase()
-          .includes(searchQuery.toLowerCase()) ||
-        item.description
-          .toLowerCase()
-          .includes(searchQuery.toLowerCase());
-
-      const matchesCategory =
-        selectedCategory === 'All Categories' ||
-        item.category === selectedCategory;
-
-      return matchesSearch && matchesCategory;
-    });
-  }, [
-    selectedList,
-    searchQuery,
-    selectedCategory,
-  ]);
+    return Array.isArray(itemData?.items)
+      ? itemData.items
+      : [];
+  }, [itemData]);
 
   const totalInventoryValue = useMemo(
     () =>
       lists.reduce(
         (sum, list) =>
-          sum + getTotalValue(list.items),
+          sum +
+          getTotalValue(
+            Array.isArray(list?.items)
+              ? list.items
+              : [],
+          ),
         0,
       ),
     [lists],
@@ -204,7 +259,7 @@ export function useInventory() {
     if (!selectedList) {
       showNotification(
         'error',
-        'Please select a list first',
+        'Select a list first, then try adding your item again.',
       );
       return;
     }
@@ -219,7 +274,7 @@ export function useInventory() {
     if (!selectedList) {
       showNotification(
         'error',
-        'Please select a list first',
+        'Select a list first, then use Bulk Add.',
       );
       return;
     }
@@ -255,22 +310,34 @@ export function useInventory() {
     };
 
     createListMutation.mutate(listData, {
-      onSuccess: (createdList) => {
-        // Optionally update local state if needed, or rely on query invalidation
-        setSelectedListId(createdList.id);
-        console.log(createdList)
-        closeCreateListDialog();
+      onSuccess: (response) => {
+        const createdList = (
+          response as {
+            list?: { _id?: string };
+          }
+        ).list;
+
+        if (createdList?._id) {
+          setSelectedListId(createdList._id);
+        }
+
         showNotification(
           'success',
-          `"${createdList.name}" list has been created and is ready for your items.`,
+          getServerMessage(response) ??
+            'List created successfully.',
         );
       },
-      onError: (err) => {
-        const message =
-          err instanceof Error
-            ? err.message
-            : 'Failed to create list';
-        showNotification('error', message);
+      onError: (err: unknown) => {
+        showNotification(
+          'error',
+          getErrorMessage(
+            err,
+            'Failed to create list',
+          ),
+        );
+      }, 
+      onSettled: () => {
+        closeCreateListDialog();
       },
     });
   };
@@ -306,20 +373,25 @@ export function useInventory() {
     updateListMutation.mutate(
       { id: listToEdit?._id, updatedData },
       {
-        onSuccess: () => {
-          closeEditListDialog();
+        onSuccess: (response) => {
           console.log(updatedData);
           showNotification(
             'success',
-            `${editListForm.name.trim()} has been updated successfully.`,
+            getServerMessage(response) ??
+              `List "${editListForm.name.trim()}" was updated successfully.`,
           );
         },
         onError: (err: unknown) => {
-          const message =
-            err instanceof Error
-              ? err.message
-              : 'Failed to update list';
-          showNotification('error', message);
+          showNotification(
+            'error',
+            getErrorMessage(
+              err,
+              'Failed to update list',
+            ),
+          );
+        },
+        onSettled: () => {
+          closeEditListDialog();
         },
       },
     );
@@ -335,13 +407,14 @@ export function useInventory() {
     if (!selectedList) {
       showNotification(
         'error',
-        'Please select a list first',
+        'Select a list first, then try adding your item again.',
       );
+
       return;
     }
 
     const newItem: Item = {
-      id: Date.now().toString(),
+      id: selectedList._id,
       name: newItemForm.name.trim(),
       description: newItemForm.description.trim(),
       category: newItemForm.category.trim(),
@@ -350,39 +423,54 @@ export function useInventory() {
       quantity:
         Number.parseInt(newItemForm.quantity) ||
         1,
-      unit: newItemForm.unit.trim(),
+      quantityType: newItemForm.unit.trim(),
       location: newItemForm.location.trim(),
       condition: newItemForm.condition,
       addedDate: new Date().toISOString(),
     };
-
-    setLists((prev) =>
-      prev.map((list) =>
-        list._id === selectedListId
-          ? {
-              ...list,
-              items: [...list.items, newItem],
-            }
-          : list,
-      ),
-    );
-
-    closeAddItemDialog();
-    showNotification(
-      'success',
-      `"${newItem.name}" has been added to ${selectedList.name}.`,
+    createItemMutation.mutate(
+      {
+        listId: newItem.id,
+        itemData:newItem,
+      },
+      {
+        onSuccess: (response) => {
+          showNotification(
+            'success',
+            getServerMessage(response) ??
+              `"${newItem.name}" has been added to ${selectedList.name}.`,
+          );
+        },
+        onError: (err: unknown) => {
+          showNotification(
+            'error',
+            getErrorMessage(
+              err,
+              'Failed to add item',
+            ),
+          );
+        },
+        onSettled: () => {
+          closeAddItemDialog();
+        },
+      },
     );
   };
 
   const openEditItem = (item: Item) => {
+   
+
+   const quantity = item.quantityDetails?.quantity ?? item.quantity ?? 1;
+  const unit = item.quantityDetails?.quantityType ?? item.unit ?? '';
+
     setItemToEdit(item);
     setEditItemForm({
       name: item.name,
       description: item.description,
       category: item.category,
       price: item.price.toString(),
-      quantity: item.quantity.toString(),
-      unit: item.unit,
+      quantity: quantity.toString(),
+      unit,
       location: item.location,
       condition: item.condition,
     });
@@ -390,139 +478,92 @@ export function useInventory() {
   };
 
   const saveItemChanges = () => {
-    if (!itemToEdit || !selectedList) return;
+     if (!itemToEdit) return;
+       const updatedData = {
+    name: editItemForm.name.trim(),
+    description: editItemForm.description.trim(),
+    category: editItemForm.category.trim(),
+    quantity:
+      Number.parseInt(editItemForm.quantity) || 1,
+    quantityType: editItemForm.unit.trim(),
+    price:
+      Number.parseFloat(editItemForm.price) || 0,
+    location: editItemForm.location.trim(),
+  };
+ updateItemMutation.mutate(
+    {
+      itemId: itemToEdit._id ?? itemToEdit.id,
+      updatedData,
+    },
+    {
+      onSuccess: (response) => {
+        showNotification(
+          'success',
+          getServerMessage(response) ??
+            `"${updatedData.name}" has been updated successfully.`,
+        );
+      },
+      onError: (err: unknown) => {
+        showNotification(
+          'error',
+          getErrorMessage(
+            err,
+            'Failed to update item',
+          ),
+        );
+      },
+      onSettled: () => {
+        closeEditItemDialog();
+      },
+    },
+  );
 
-    const error = validateItemForm(editItemForm);
-    if (error) {
-      showNotification('error', error);
-      return;
-    }
-
-    setLists((prev) =>
-      prev.map((list) =>
-        list._id === selectedListId
-          ? {
-              ...list,
-              items: list.items.map((item) =>
-                item.id === itemToEdit.id
-                  ? {
-                      ...item,
-                      name: editItemForm.name.trim(),
-                      description:
-                        editItemForm.description.trim(),
-                      category:
-                        editItemForm.category.trim(),
-                      price:
-                        Number.parseFloat(
-                          editItemForm.price,
-                        ) || 0,
-                      quantity:
-                        Number.parseInt(
-                          editItemForm.quantity,
-                        ) || 1,
-                      unit: editItemForm.unit.trim(),
-                      location:
-                        editItemForm.location.trim(),
-                      condition:
-                        editItemForm.condition,
-                    }
-                  : item,
-              ),
-            }
-          : list,
-      ),
-    );
-
-    closeEditItemDialog();
-    showNotification(
-      'success',
-      `"${editItemForm.name.trim()}" has been updated successfully.`,
-    );
   };
 
   const processBulkAdd = () => {
-    if (!selectedList || !bulkItems.trim()) {
-      showNotification(
-        'error',
-        'Please enter some items to add',
-      );
-      return;
-    }
-
-    const lines = bulkItems
-      .split('\n')
-      .filter((line) => line.trim());
-    let successCount = 0;
-    let errorCount = 0;
-
-    const newItems: Item[] = lines
-      .map((line, index) => {
-        const parts = line
-          .split(',')
-          .map((part) => part.trim());
-        if (!parts[0]) {
-          errorCount++;
-          return null;
-        }
-        successCount++;
-        return {
-          id: (Date.now() + index).toString(),
-          name: parts[0],
-          description: parts[1] || '',
-          category: parts[2] || '',
-          price: Number.parseFloat(parts[3]) || 0,
-          quantity:
-            Number.parseInt(parts[4]) || 1,
-          unit: parts[5] || '',
-          location: parts[6] || '',
-          condition:
-            (parts[7] as Item['condition']) ||
-            'Good',
-          addedDate: new Date().toISOString(),
-        };
-      })
-      .filter(Boolean) as Item[];
-
-    setLists((prev) =>
-      prev.map((list) =>
-        list._id === selectedListId
-          ? {
-              ...list,
-              items: [...list.items, ...newItems],
-            }
-          : list,
-      ),
-    );
-
     closeBulkAddDialog();
-
-    if (successCount > 0) {
-      const skipped =
-        errorCount > 0
-          ? ` ${errorCount} items were skipped due to missing information.`
-          : '';
-      showNotification(
-        'success',
-        `Added ${successCount} items successfully.${skipped}`,
-      );
-    }
+    showNotification(
+      'info',
+      'Bulk add is being prepared. This modal is now closed.',
+    );
   };
 
   const exportList = () => {
-    if (
-      !selectedList ||
-      selectedList.items.length === 0
-    ) {
+    if (!selectedList) {
       showNotification(
         'info',
-        'Please select a list with items to export',
+        'Select a list before exporting.',
       );
       return;
     }
-    showNotification(
-      'info',
-      "Export feature is coming soon! We're working hard to bring you this functionality.",
-    );
+
+    const items = Array.isArray(filteredItems)
+      ? filteredItems
+      : [];
+
+    if (items.length === 0) {
+      showNotification(
+        'info',
+        'Select a list that has at least one item before exporting.',
+      );
+      return;
+    }
+
+    try {
+      exportSelectedListPdf(selectedList, items);
+      showNotification(
+        'success',
+        `"${selectedList.name}" exported as PDF.`,
+      );
+    } catch (error: unknown) {
+      showNotification(
+        'error',
+        getErrorMessage(
+          error,
+          'Unable to export this list as PDF right now.',
+        ),
+      );
+    }
   };
 
   const clearFilters = () => {
@@ -530,12 +571,13 @@ export function useInventory() {
     setSelectedCategory('All Categories');
     showNotification(
       'info',
-      'Search and filters have been cleared',
+      'Filters cleared. You are now viewing all items in this list.',
     );
   };
 
   const requestDeleteItem = (item: Item) => {
     setDeleteTarget({ type: 'item', item });
+   
   };
 
   const requestDeleteList = (
@@ -546,61 +588,67 @@ export function useInventory() {
 
   const confirmDelete = () => {
     if (!deleteTarget) return;
-
-    if (deleteTarget.type === 'item') {
-      setLists((prev) =>
-        prev.map((list) =>
-          list._id === selectedListId
-            ? {
-                ...list,
-                items: list.items.filter(
-                  (item) =>
-                    item.id !==
-                    deleteTarget.item.id,
-                ),
-              }
-            : list,
-        ),
-      );
-      showNotification(
-        'success',
-        `"${deleteTarget.item.name}" has been removed from your list.`,
-      );
-      setDeleteTarget(null);
-    } else if (deleteTarget.type === 'list') {
+    const target = deleteTarget;
+    setDeleteTarget(null);
+ 
+    if (target.type === 'item') {
+  deleteItemMutation.mutate(
+    // extra parameter 'listId'
+    {
+      itemId: target.item?._id,
+      listId: selectedListId,
+    },
+    {
+      onSuccess: (response) => {
+        showNotification(
+          'success',
+          getServerMessage(response) ??
+            `"${target.item.name}" has been removed from your list.`,
+        );
+      },
+      onError: (err: unknown) => {
+        showNotification(
+          'error',
+          getErrorMessage(
+            err,
+            'Failed to delete item',
+          ),
+        );
+      },
+    },
+  );
+} else if (target.type === 'list') {
       // Use the deleteListMutation from useLists
       deleteListMutation.mutate(
-        deleteTarget.list._id,
+        target.list._id,
         {
-          onSuccess: () => {
-            setLists((prev) => {
-              const updated = prev.filter(
-                (list) =>
-                  list._id !==
-                  deleteTarget.list._id,
-              );
-              if (updated.length === 0) {
-                setSelectedListId('');
-              } else if (
-                deleteTarget.list._id ===
-                selectedListId
-              ) {
-                setSelectedListId(updated[0]._id);
-              }
-              return updated;
-            });
+          onSuccess: (response) => {
+            const updated = lists.filter(
+              (list) =>
+                list._id !== target.list._id,
+            );
+
+            if (updated.length === 0) {
+              setSelectedListId('');
+            } else if (
+              target.list._id === selectedListId
+            ) {
+              setSelectedListId(updated[0]._id);
+            }
             showNotification(
               'success',
-              `"${deleteTarget.list.name}" list has been deleted.`,
+              getServerMessage(response) ??
+                `"${target.list.name}" list has been deleted.`,
             );
-            setDeleteTarget(null);
           },
-          onError: (err) => {
-            const message =
-              err instanceof Error
-                ? err.message
-                : 'Failed to delete list';
-            showNotification('error', message);
+          onError: (err: unknown) => {
+            showNotification(
+              'error',
+              getErrorMessage(
+                err,
+                'Failed to delete list',
+              ),
+            );
           },
         },
       );
@@ -667,5 +715,7 @@ export function useInventory() {
     requestDeleteList,
     confirmDelete,
     cancelDelete,
+    isLoadingListData,
+    isItemDataLoading
   };
 }
