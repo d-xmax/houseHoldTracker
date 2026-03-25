@@ -1,10 +1,9 @@
-import { data } from "react-router-dom";
+ 
 import { api } from "./axios";
 
 // @path POST /api/list/
 export async function createList(listData){
     const res = await api.post('/list', listData)
-    console.log(data)
     return res.data
 }
 
@@ -18,7 +17,7 @@ export async function getLists() {
 // @path PUT /api/list/:id
 export async function updateList(id, updatedData){
 const res = await api.put(`/list/${id}`, updatedData)
-console.log(res.data, updatedData)
+console.log(id, updatedData)
 return res.data
 }
 

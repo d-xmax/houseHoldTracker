@@ -1,8 +1,97 @@
+import { z } from 'zod';
 import type {
   Item,
   ItemFormValues,
   ListFormValues,
-} from '@/features/inventory/types';
+} from '@/pages/dashboard/types';
+
+const listSchema = z.object({
+  name: z
+    .string()
+    .trim()
+    .min(1, 'Please provide a list name'),
+  description: z
+    .string()
+    .max(
+      500,
+      'Description should be under 500 characters',
+    ),
+  color: z
+    .string()
+    .min(
+      1,
+      'Please select a color theme for your list',
+    ),
+});
+
+const itemSchema = z.object({
+  name: z
+    .string()
+    .trim()
+    .min(1, 'Please provide an item name'),
+  description: z
+    .string()
+    .max(
+      500,
+      'Description should be under 500 characters',
+    ),
+  category: z
+    .string()
+    .max(
+      120,
+      'Category should be under 120 characters',
+    ),
+  price: z
+    .string()
+    .refine(
+      (value) =>
+        value.trim() === '' ||
+        Number.isFinite(Number(value)),
+      {
+        message: 'Please provide a valid price',
+      },
+    )
+    .refine(
+      (value) =>
+        value.trim() === '' || Number(value) >= 0,
+      {
+        message: 'Price cannot be negative',
+      },
+    ),
+  quantity: z
+    .string()
+    .min(1, 'Please provide a valid quantity')
+    .refine(
+      (value) => {
+        const quantity = Number(value);
+        return (
+          Number.isInteger(quantity) && quantity > 0
+        );
+      },
+      {
+        message: 'Please provide a valid quantity',
+      },
+    ),
+  unit: z
+    .string()
+    .trim()
+    .min(
+      1,
+      'Please provide a valid unit (e.g., bags, lbs)',
+    ),
+  location: z
+    .string()
+    .max(
+      160,
+      'Location should be under 160 characters',
+    ),
+  condition: z.enum([
+    'Good',
+    'Fair',
+    'Poor',
+    'Expired',
+  ]),
+});
 
 export const getTotalValue = (
   items: Item[]
@@ -49,24 +138,25 @@ export const formatTime = (
 export const validateItemForm = (
   form: ItemFormValues
 ): string | null => {
-  if (!form.name.trim())
-    return 'Please provide an item name';
-  if (!form.unit.trim())
-    return 'Please provide a valid unit (e.g., bags, lbs)';
-  if (
-    !form.quantity ||
-    Number.parseInt(form.quantity) < 1
-  )
-    return 'Please provide a valid quantity';
+  const parsed = itemSchema.safeParse(form);
+  if (!parsed.success) {
+    return (
+      parsed.error.issues[0]?.message ??
+      'Please provide valid item details'
+    );
+  }
   return null;
 };
 
 export const validateListForm = (
   form: ListFormValues
 ): string | null => {
-  if (!form.name.trim())
-    return 'Please provide a list name';
-  if (!form.color)
-    return 'Please select a color theme for your list';
+  const parsed = listSchema.safeParse(form);
+  if (!parsed.success) {
+    return (
+      parsed.error.issues[0]?.message ??
+      'Please provide valid list details'
+    );
+  }
   return null;
 };

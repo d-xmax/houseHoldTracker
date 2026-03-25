@@ -29,6 +29,7 @@ export interface InventoryList {
 export interface Notification {
   type: 'success' | 'error' | 'info';
   message: string;
+  durationMs?: number;
 }
 
 export interface ListFormValues {

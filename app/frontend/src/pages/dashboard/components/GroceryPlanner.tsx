@@ -12,12 +12,10 @@ import { useInventory } from '../hooks/useInventory';
 export default function GroceryPlanner( ) {
   const {
     lists,
-    filteredLists,
     selectedListId,
     setSelectedListId,
     searchQuery,
     setSearchQuery,
-    listSearchQuery,
     selectedCategory,
     setSelectedCategory,
     allCategories,
@@ -62,6 +60,8 @@ export default function GroceryPlanner( ) {
     requestDeleteList,
     confirmDelete,
     cancelDelete,
+    isLoadingListData,
+    isItemDataLoading
   } = useInventory();
 
   return (
@@ -71,16 +71,13 @@ export default function GroceryPlanner( ) {
           <div className="flex flex-1 min-h-0 flex-col gap-6 lg:flex-row">
             <ListSidebar
               lists={lists}
-              visibleLists={filteredLists}
-              isSearchActive={
-                listSearchQuery.trim().length > 0
-              }
               selectedListId={selectedListId}
               onSelectList={setSelectedListId}
               onCreateList={openCreateListDialog}
               onEditList={openEditList}
               onDeleteList={requestDeleteList}
               totalValue={totalInventoryValue}
+              isLoading={isLoadingListData}
             />
 
             <div className="flex-1">
@@ -100,6 +97,7 @@ export default function GroceryPlanner( ) {
                 onBulkAdd={openBulkAddDialog}
                 onEditItem={openEditItem}
                 onDeleteItem={requestDeleteItem}
+                isLoading={isItemDataLoading}
               />
             </div>
           </div>

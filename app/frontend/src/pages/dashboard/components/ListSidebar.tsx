@@ -6,24 +6,20 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-
+import { LoadingState } from '@/shared/components/LoadingState';
 import { getColorClasses } from '@/utils/inventory-helpers';
 import type { ListSidebarTypes } from './types/listSidebarTypes';
-import { useLists } from '@/hooks/useListsInfo';
 
 export function ListSidebar({
   lists,
-  visibleLists,
   selectedListId,
   onSelectList,
   onCreateList,
   onEditList,
   onDeleteList,
   totalValue,
-  isSearchActive,
+  isLoading,
 }: ListSidebarTypes) {
-  const { data, isLoading, isFetching, isError, error } = useLists();
-   
   return (
     <aside className="w-full lg:w-64 flex flex-col gap-6">
       <Card className="border-none shadow-sm">
@@ -44,14 +40,22 @@ export function ListSidebar({
         </CardHeader>
         <CardContent className="px-2 pb-2">
           <div className="space-y-1">
-            {data?.readListCount === 0 ? (
+            
+            {
+            isLoading ? (
+              <LoadingState
+                title="Loading Lists"
+                description="Syncing your household lists..."
+                variant="inline"
+                className="p-4"
+              />
+            ) :
+            lists.length === 0 ? (
               <div className="px-3 py-6 text-center text-xs text-slate-400">
-                {isSearchActive
-                  ? 'No lists match your search.'
-                  : 'Create a list to get started.'}
+                Create a list to get started.
               </div>
             ) : (
-              data?.readAll.map((list) => {
+              lists.map((list) => {
                 const isSelected =
                   selectedListId === list?._id;
 
@@ -139,7 +143,7 @@ export function ListSidebar({
           Total Active Lists
         </p>
         <h4 className="text-2xl font-bold">
-          {data?.readListCount}
+          {lists.length}
         </h4>
         <p className="text-[10px] text-emerald-400 mt-2">
           Inventory Value: $
