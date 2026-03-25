@@ -246,18 +246,10 @@ const rulesForDeleteItem = () => [
     .isMongoId()
     .withMessage('Not valid Id'),
 ];
-
-const rulesForGetAllItem = () => [
-  param('listId')
-    .notEmpty()
-    .isMongoId()
-    .withMessage('Not valid Id'),
-];
 export {
   rulesForListParam,
   rulesForGetItem,
   rulesForUpdateItem,
   rulesForGetAllItem,
   rulesForDeleteItem,
-  rulesForGetAllItem,
 };
