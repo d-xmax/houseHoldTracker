@@ -28,8 +28,9 @@ const createList = asyncHandler(
         'fail to create item please try again'
       );
     }
-    res.status(200).json({
-      message: userId,
+    res.status(201).json({
+      message: `List "${name}" created successfully`,
+      list,
     });
   }
 );
@@ -40,13 +41,15 @@ const createList = asyncHandler(
 const updateList = asyncHandler(
   async (req, res) => {
     const listId = req.params.id;
+    const userId = req.user._id;
     if (!listId || listId === null) {
       res.status(400);
       throw new Error('No list found');
     }
-    const exList = await List.findById(
-      listId
-    ).lean();
+    const exList = await List.findOne({
+      _id: listId,
+      userId,
+    }).lean();
     const newData = req.body;
     // list is not found
     if (exList === null) {
@@ -78,7 +81,7 @@ const updateList = asyncHandler(
 
     const updatedList =
       await List.findOneAndUpdate(
-        { _id: listId },
+        { _id: listId, userId },
         { $set: updateData },
         { new: true }
       );
@@ -102,19 +105,23 @@ const updateList = asyncHandler(
 const deleteList = asyncHandler(
   async (req, res) => {
     const listId = req.params.id;
+    const userId = req.user._id;
     if (!listId || listId === null) {
       res.status(400);
       throw new Error('No list found');
     }
     const deletedList =
-      await List.findByIdAndDelete({
+      await List.findOneAndDelete({
         _id: listId,
+        userId,
       });
     if (!deletedList || deletedList === null) {
       res.status(404);
       throw new Error('List not found');
     }
-    res.sendStatus(204);
+    res.status(200).json({
+      message: `List "${deletedList.name}" deleted successfully`,
+    });
   }
 );
 
@@ -124,12 +131,14 @@ const deleteList = asyncHandler(
 const readList = asyncHandler(
   async (req, res) => {
     const listId = req.params.id;
+    const userId = req.user._id;
     if (!listId || listId === null) {
       res.status(400);
       throw new Error('No list found');
     }
-    const readOne = await List.findById({
+    const readOne = await List.findOne({
       _id: listId,
+      userId,
     }).select('-userId');
 
     if (!readOne || readOne === null) {
@@ -146,11 +155,12 @@ const readList = asyncHandler(
 // @access Public
 const readAllList = asyncHandler(
   async (req, res) => {
-    const readAll = await List.find().select(
-      '-userId'
-    );
+    const userId = req.user._id;
+    const readAll = await List.find({
+      userId,
+    }).select('-userId');
     const readListCount =
-      await List.find().countDocuments();
+      await List.countDocuments({ userId });
 
     if (
       !readListCount ||

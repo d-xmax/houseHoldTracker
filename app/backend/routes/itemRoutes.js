@@ -5,14 +5,12 @@ import {
   getItem,
   updateItem,
 } from '../controllers/itemController/itemController.js';
-import {
-  createItem,
-  getAllItem,
-} from '../controllers/itemController/itemControllerWithListParam.js';
+import { createItem, getAllItem } from '../controllers/itemController/itemControllerWithListParam.js';
 import {
   rulesForDeleteItem,
   rulesForGetAllItem,
   rulesForGetItem,
+  rulesForGetAllItem,
   rulesForListParam,
   rulesForUpdateItem,
 } from '../utils/rules.js';
@@ -36,19 +34,27 @@ itemParamRouter
     createItem,
   )
   .get(
+    protect,
     rulesForGetAllItem(),
     validation,
     getAllItem,
   );
 itemRouter
   .route('/:itemId')
-  .get(rulesForGetItem(), validation, getItem)
+  .get(
+    protect,
+    rulesForGetItem(),
+    validation,
+    getItem
+  )
   .put(
+    protect,
     rulesForUpdateItem(),
     validation,
     updateItem,
   )
   .delete(
+    protect,
     rulesForDeleteItem(),
     validation,
     deleteItem,

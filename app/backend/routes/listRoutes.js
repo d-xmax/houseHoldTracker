@@ -25,10 +25,15 @@ router
     validation,
     createList
   )
-  .get(readAllList);
+  .get(protect, readAllList);
 router
   .route('/:id')
-  .get(rulesForReadList(), validation, readList)
+  .get(
+    protect,
+    rulesForReadList(),
+    validation,
+    readList
+  )
   .put(
     protect,
     rulesForUpdateList(),
@@ -36,6 +41,7 @@ router
     updateList
   )
   .delete(
+    protect,
     rulesForDeleteList(),
     validation,
     deleteList
