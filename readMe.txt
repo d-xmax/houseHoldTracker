@@ -46,3 +46,15 @@ item update complete
 Now working of basic's end part
 how to delete with items from when deleting list
 how to order folder structure
+
+
+added basic routing
+still need to types for the some components 
+currently working on connection between backend and frontend
+
+need to add items count on the list
+loader added only to the protected route
+I saw lists save states edit lists have forms it saves the form data onchange
+
+MONGO_URI=mongodb://root:password@localhost:27017/myTrackerDB?authSource=admin
+PORT=5000

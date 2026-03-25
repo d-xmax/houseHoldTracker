@@ -12,4 +12,5 @@ export interface InventoryTableTypes {
     onBulkAdd: ()=> void;
     onEditItem: (item: Item)=> void;
     onDeleteItem: (item: Item)=> void;
+    isLoading?: boolean;
 }

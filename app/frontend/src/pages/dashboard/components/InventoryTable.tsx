@@ -26,6 +26,8 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import type { InventoryTableTypes } from './types/inventoryTypes';
+import { LoadingState } from '@/shared/components/LoadingState';
+ 
  
 
  
@@ -42,9 +44,24 @@ export function InventoryTable({
   onBulkAdd,
   onEditItem,
   onDeleteItem,
+  isLoading,
 }:InventoryTableTypes  ) {
+ 
+   
   return (
-    <Card className="border-none shadow-sm overflow-hidden flex flex-col h-full">
+    <Card className="relative border-none shadow-sm overflow-hidden flex flex-col h-full">
+      {isLoading && (
+        <div className="absolute inset-0 z-20 flex items-center justify-center bg-white/75 backdrop-blur-[1px]">
+          <div className="w-full max-w-md px-4">
+            <LoadingState
+              variant="panel"
+              title="Loading items"
+              description="Loading items for this list..."
+            />
+          </div>
+        </div>
+      )}
+
       <div className="p-4 border-b border-slate-50 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white">
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -172,7 +189,7 @@ export function InventoryTable({
                     ${item.price.toFixed(2)}
                   </TableCell>
                   <TableCell className="text-sm font-medium text-slate-600">
-                    {item.quantity} {item.unit}
+                    {item.quantityDetails?.quantity} {item.quantityDetails?.quantityType}
                   </TableCell>
                   <TableCell className="text-right pr-6">
                     <div className="flex items-center justify-end gap-1">

@@ -17,7 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import type { EditItemModalTypes } from '../modalTypes';
+import type { EditItemModalTypes } from '../types/modalTypes';
 
 export function EditItemModal({
   open,
@@ -42,19 +42,15 @@ export function EditItemModal({
             Edit Item
           </DialogTitle>
           <DialogDescription className="text-slate-500">
-            Update the details for your item. Unit
-            and Quantity are required.
+            Update item details. Name, Unit and Quantity are required.
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-6 py-4">
           <div className="space-y-3">
-            <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-              Basic Details
-            </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label
-                  htmlFor="editItemName"
+                  htmlFor="itemName"
                   className="text-slate-700"
                 >
                   Item Name{' '}
@@ -63,7 +59,7 @@ export function EditItemModal({
                   </span>
                 </Label>
                 <Input
-                  id="editItemName"
+                  id="itemName"
                   value={form.name}
                   onChange={(event) =>
                     onFormChange({
@@ -77,13 +73,13 @@ export function EditItemModal({
               </div>
               <div className="grid gap-2">
                 <Label
-                  htmlFor="editDescription"
+                  htmlFor="description"
                   className="text-slate-700"
                 >
-                  Description (Optional)
+                  Description
                 </Label>
                 <Input
-                  id="editDescription"
+                  id="description"
                   value={form.description}
                   onChange={(event) =>
                     onFormChange({
@@ -100,19 +96,16 @@ export function EditItemModal({
           </div>
 
           <div className="space-y-3">
-            <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-              Organization
-            </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label
-                  htmlFor="editCategory"
+                  htmlFor="category"
                   className="text-slate-700"
                 >
-                  Category (Optional)
+                  Category
                 </Label>
                 <Input
-                  id="editCategory"
+                  id="category"
                   value={form.category}
                   onChange={(event) =>
                     onFormChange({
@@ -127,13 +120,13 @@ export function EditItemModal({
               </div>
               <div className="grid gap-2">
                 <Label
-                  htmlFor="editLocation"
+                  htmlFor="location"
                   className="text-slate-700"
                 >
-                  Location (Optional)
+                  Location
                 </Label>
                 <Input
-                  id="editLocation"
+                  id="location"
                   value={form.location}
                   onChange={(event) =>
                     onFormChange({
@@ -150,13 +143,10 @@ export function EditItemModal({
           </div>
 
           <div className="space-y-3">
-            <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-              Inventory Details
-            </p>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="grid gap-2">
                 <Label
-                  htmlFor="editQuantity"
+                  htmlFor="quantity"
                   className="text-slate-700"
                 >
                   Quantity{' '}
@@ -165,7 +155,7 @@ export function EditItemModal({
                   </span>
                 </Label>
                 <Input
-                  id="editQuantity"
+                  id="quantity"
                   type="number"
                   min="1"
                   value={form.quantity}
@@ -181,7 +171,7 @@ export function EditItemModal({
               </div>
               <div className="grid gap-2">
                 <Label
-                  htmlFor="editUnit"
+                  htmlFor="unit"
                   className="text-slate-700"
                 >
                   Unit{' '}
@@ -190,7 +180,7 @@ export function EditItemModal({
                   </span>
                 </Label>
                 <Input
-                  id="editUnit"
+                  id="unit"
                   value={form.unit}
                   onChange={(event) =>
                     onFormChange({
@@ -204,13 +194,13 @@ export function EditItemModal({
               </div>
               <div className="grid gap-2">
                 <Label
-                  htmlFor="editPrice"
+                  htmlFor="price"
                   className="text-slate-700"
                 >
-                  Price (Optional)
+                  Price
                 </Label>
                 <Input
-                  id="editPrice"
+                  id="price"
                   type="number"
                   min="0"
                   step="0.01"
@@ -227,18 +217,17 @@ export function EditItemModal({
               </div>
               <div className="grid gap-2">
                 <Label
-                  htmlFor="editCondition"
+                  htmlFor="condition"
                   className="text-slate-700"
                 >
-                  Condition (Optional)
+                  Condition
                 </Label>
                 <Select
                   value={form.condition}
                   onValueChange={(value) =>
                     onFormChange({
                       ...form,
-                      condition:
-                        value as typeof form.condition,
+                      condition: value as typeof form.condition,
                     })
                   }
                 >
