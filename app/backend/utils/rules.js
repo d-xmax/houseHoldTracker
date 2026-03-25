@@ -7,7 +7,7 @@ const rulesForRegister = () => [
     .withMessage('user name is required')
     .matches(/^[a-zA-Z_]+$/)
     .withMessage(
-      'Name can only contain letters , Use "_" for spaces'
+      'Name can only contain letters , Use "_" for spaces',
     )
     .isLength({ min: 3 })
     .withMessage('user name is too short')
@@ -17,11 +17,11 @@ const rulesForRegister = () => [
   body('password')
     .isLength({ min: 5 })
     .withMessage(
-      'password must have at least 5 characters long'
+      'password must have at least 5 characters long',
     )
     .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/)
     .withMessage(
-      'Password must contain numbers and letters'
+      'Password must contain numbers and letters',
     ),
   body('email')
     .isEmail()
@@ -32,10 +32,10 @@ const rulesForRegister = () => [
         (existUser) => {
           if (existUser) {
             return Promise.reject(
-              'Your email is already exist. Please enter different email'
+              'Your email is already exist. Please enter different email',
             );
           }
-        }
+        },
       );
     }),
 ];
@@ -48,11 +48,11 @@ const rulesForAuth = () => [
   body('password')
     .isLength({ min: 5 })
     .withMessage(
-      'password must have at least 5 characters long'
+      'password must have at least 5 characters long',
     )
     .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/)
     .withMessage(
-      'Password must contain numbers and letters'
+      'Password must contain numbers and letters',
     ),
 ];
 
@@ -61,7 +61,7 @@ const rulesForUpdate = () => [
     .optional()
     .matches(/^[a-zA-Z_]+$/)
     .withMessage(
-      'Name can only contain letters , Use "_" for spaces'
+      'Name can only contain letters , Use "_" for spaces',
     )
     .isLength({ min: 3 })
     .withMessage('user name is too short')
@@ -76,11 +76,11 @@ const rulesForUpdate = () => [
     .optional()
     .isLength({ min: 5 })
     .withMessage(
-      'password must have at least 5 characters long'
+      'password must have at least 5 characters long',
     )
     .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/)
     .withMessage(
-      'Password must contain numbers and letters'
+      'Password must contain numbers and letters',
     ),
 ];
 
@@ -240,9 +240,17 @@ const rulesForDeleteItem = () => [
     .isMongoId()
     .withMessage('Not valid Id'),
 ];
+
+const rulesForGetAllItem = () => [
+  param('listId')
+    .notEmpty()
+    .isMongoId()
+    .withMessage('Not valid Id'),
+];
 export {
   rulesForListParam,
   rulesForGetItem,
   rulesForUpdateItem,
   rulesForDeleteItem,
+  rulesForGetAllItem,
 };

@@ -8,6 +8,7 @@ import {
 import { createItem, getAllItem } from '../controllers/itemController/itemControllerWithListParam.js';
 import {
   rulesForDeleteItem,
+  rulesForGetAllItem,
   rulesForGetItem,
   rulesForGetAllItem,
   rulesForListParam,
@@ -50,13 +51,13 @@ itemRouter
     protect,
     rulesForUpdateItem(),
     validation,
-    updateItem
+    updateItem,
   )
   .delete(
     protect,
     rulesForDeleteItem(),
     validation,
-    deleteItem
+    deleteItem,
   );
 
 export { itemRouter, itemParamRouter };

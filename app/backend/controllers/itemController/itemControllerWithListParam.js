@@ -9,14 +9,14 @@ import List from '../../model/listModel.js';
 const createItem = asyncHandler(
   async (req, res) => {
     const userId = req.user._id;
-    const listId = req.params.listId  
+    const listId = req.params.listId;
 
     const {
       name,
       category,
       quantity,
       quantityType,
-      description,   
+      description,
       price,
       location,
       dop,
@@ -24,9 +24,9 @@ const createItem = asyncHandler(
     if (!userId || userId === null) {
       res.status(401);
       throw Error(
-        'User not found please sign in again' 
+        'User not found please sign in again',
       );
-    } 
+    }
     if (!listId || listId === null) {
       res.status(400);
       throw new Error('No list found');
@@ -66,6 +66,20 @@ const createItem = asyncHandler(
     });
   }
 );
+// @desc add item to the list
+// @path GET /api/:listId/item
+// @access Public
+
+const getAllItem = asyncHandler(
+  async (req, res) => {
+    const listId = req.params.listId;
+
+    if (!listId || listId === null) {
+      res.status(400);
+      throw new Error('No list found');
+    }
+
+    const items = await Item.find({ listId });
 
 // @desc add item to the list
 // @path GET /api/:listId/item
