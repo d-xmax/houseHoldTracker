@@ -70,17 +70,6 @@ const createItem = asyncHandler(
 // @path GET /api/:listId/item
 // @access Public
 
-const getAllItem = asyncHandler(
-  async (req, res) => {
-    const listId = req.params.listId;
-
-    if (!listId || listId === null) {
-      res.status(400);
-      throw new Error('No list found');
-    }
-
-    const items = await Item.find({ listId });
-
 // @desc add item to the list
 // @path GET /api/:listId/item
 // @access Public

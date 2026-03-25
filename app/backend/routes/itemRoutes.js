@@ -10,7 +10,6 @@ import {
   rulesForDeleteItem,
   rulesForGetAllItem,
   rulesForGetItem,
-  rulesForGetAllItem,
   rulesForListParam,
   rulesForUpdateItem,
 } from '../utils/rules.js';
