@@ -7,6 +7,12 @@
   ],
   "scripts": {
     "dev": "pnpm -r run dev",
-    "build": "pnpm -r run build"
+    "build": "pnpm -r run build",
+    "lint": "pnpm -r run lint",
+    "format": "pnpm -r run format"
+
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.4.7"
   }
 }

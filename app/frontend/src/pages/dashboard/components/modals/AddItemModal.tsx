@@ -17,7 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import type { AddItemModalTypes } from '../modalTypes';
+import type { AddItemModalTypes } from '../types/modalTypes';
 
 export function AddItemModal({
   open,

@@ -234,6 +234,12 @@ const rulesForUpdateItem = () => [
   body('dop').optional().trim().isDate(),
 ];
 
+const rulesForGetAllItem = () => [
+  param('listId')
+    .notEmpty()
+    .isMongoId()
+    .withMessage('Not valid Id'),
+];
 const rulesForDeleteItem = () => [
   param('itemId')
     .notEmpty()
@@ -251,6 +257,7 @@ export {
   rulesForListParam,
   rulesForGetItem,
   rulesForUpdateItem,
+  rulesForGetAllItem,
   rulesForDeleteItem,
   rulesForGetAllItem,
 };
