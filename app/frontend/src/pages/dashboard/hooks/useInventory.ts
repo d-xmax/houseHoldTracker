@@ -160,7 +160,7 @@ export function useInventory() {
       const message = (
         resMessage as { message?: unknown }
       ).message;
-      console.log(message)
+      // log removed
       return typeof message === 'string'
         ? message
         : null;
@@ -374,7 +374,7 @@ export function useInventory() {
       { id: listToEdit?._id, updatedData },
       {
         onSuccess: (response) => {
-          console.log(updatedData);
+          // log removed
           showNotification(
             'success',
             getServerMessage(response) ??

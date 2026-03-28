@@ -35,7 +35,7 @@ const userRegister = asyncHandler(
 const userSetAuth = asyncHandler(
   async (req, res) => {
     const { email, password } = req.body;
-    console.log(email);
+    // email log removed
     const user = await User.findOne({
       email,
     });
