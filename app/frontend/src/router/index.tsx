@@ -23,7 +23,7 @@ export const router = createBrowserRouter([
 
     children: [
       {
-        path: 'grocery-planner',
+        path: 'grocery-pilot',
         children: [
           {
             index: true,

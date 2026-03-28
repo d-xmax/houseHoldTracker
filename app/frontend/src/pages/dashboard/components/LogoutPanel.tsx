@@ -48,7 +48,7 @@ export function LogoutPanel({
       onCancel();
       return;
     }
-    navigate('/grocery-planner', { replace: true });
+    navigate('/grocery-pilot', { replace: true });
   };
 
   const isBusy =
@@ -61,7 +61,7 @@ export function LogoutPanel({
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-red-900">
             <ShieldAlert className="h-5 w-5" />
-            Leaving Donezo?
+            Leaving Grocery Pilot?
           </CardTitle>
           <CardDescription>
             You are about to sign {userName} out

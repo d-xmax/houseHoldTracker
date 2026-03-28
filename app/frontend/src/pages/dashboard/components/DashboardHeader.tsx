@@ -32,7 +32,7 @@ export function DashboardHeader({
           <Menu className="w-6 h-6" />
         </Button>
         <span className="font-bold text-lg">
-          Donezo
+          Grocery Pilot 
         </span>
       </div>
 

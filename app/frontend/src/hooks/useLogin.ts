@@ -45,7 +45,7 @@ export function useLogin() {
       await queryClient.invalidateQueries({
         queryKey: ['userInfo'],
       });
-      navigate('/grocery-planner');
+      navigate('/grocery-pilot');
     },
     onError: (error) => console.log(error),
   });
