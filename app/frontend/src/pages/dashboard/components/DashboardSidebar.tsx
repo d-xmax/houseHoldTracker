@@ -16,8 +16,8 @@ const MAIN_MENU = [
   {
     id: 'inventory',
     icon: Package2,
-    label: 'Grocery Planner',
-    link: 'grocery-planner'
+    label: 'Grocery Pilot',
+    link: 'grocery-pilot'
   },
 ];
 const GENERAL_MENU = [
@@ -25,20 +25,20 @@ const GENERAL_MENU = [
     id: 'help',
     icon: HelpCircle,
     label: 'Help',
-    link: 'grocery-planner/help'
+    link: 'grocery-pilot/help'
   },
   {
     id: 'settings',
     icon: Settings,
     label: 'Settings',
-    link: 'grocery-planner/settings' 
+    link: 'grocery-pilot/settings' 
   },
 
   {
     id: 'logout',
     icon: LogOut,
     label: 'Logout',
-    link: 'grocery-planner/logout'
+    link: 'grocery-pilot/logout'
   },
 ];
 
@@ -64,7 +64,7 @@ export function DashboardSidebar({
             <ShoppingCart className="w-5 h-5" />
           </div>
           <span className="text-xl font-bold tracking-tight text-slate-900">
-            Donezo
+            Grocery Pilot
           </span>
         </div>
         <Button

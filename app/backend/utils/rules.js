@@ -152,6 +152,11 @@ const quantityTypes = [
   'liter',
   'ml',
   'packet',
+  'piece',
+  'box',
+  'dozen',
+  'bag',
+  
 ];
 const rulesForListParam = () => [
   param('listId')

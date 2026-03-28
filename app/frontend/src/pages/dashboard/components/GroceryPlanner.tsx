@@ -9,7 +9,7 @@ import { BulkAddModal } from '@/pages/dashboard/components/modals/BulkAddModal';
 import { DeleteConfirmModal } from '@/pages/dashboard/components/modals/DeleteConfirmModal';
 import { useInventory } from '../hooks/useInventory';
 
-export default function GroceryPlanner( ) {
+export default function GroceryPilot( ) {
   const {
     lists,
     selectedListId,
