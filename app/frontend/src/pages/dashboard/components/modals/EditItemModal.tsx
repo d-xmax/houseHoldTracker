@@ -17,6 +17,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+
+const quantityTypes = [
+  'kg',
+  'g',
+  'liter',
+  'ml',
+  'packet',
+  'piece',
+  'box',
+  'dozen',
+  'bag'
+];
 import type { EditItemModalTypes } from '../types/modalTypes';
 
 export function EditItemModal({
@@ -175,22 +187,28 @@ export function EditItemModal({
                   className="text-slate-700"
                 >
                   Unit{' '}
-                  <span className="text-red-400">
-                    *
-                  </span>
+                  <span className="text-red-400">*</span>
                 </Label>
-                <Input
-                  id="unit"
+                <Select
                   value={form.unit}
-                  onChange={(event) =>
+                  onValueChange={(value) =>
                     onFormChange({
                       ...form,
-                      unit: event.target.value,
+                      unit: value,
                     })
                   }
-                  placeholder="e.g., bags, lbs, bottles"
-                  className="bg-white border-slate-200 text-slate-900 focus-visible:ring-emerald-600"
-                />
+                >
+                  <SelectTrigger className="bg-white border-slate-200 text-slate-900 focus-visible:ring-emerald-600">
+                    <SelectValue placeholder="Select unit" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white border-slate-200">
+                    {quantityTypes.map((type) => (
+                      <SelectItem key={type} value={type}>
+                        {type}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div className="grid gap-2">
                 <Label
