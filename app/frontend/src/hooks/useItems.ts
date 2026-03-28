@@ -10,8 +10,7 @@ export function useItems(userId?: string) {
      { listId: string; itemData: unknown }
     >({
         mutationFn : ({listId, itemData})=>{
-        console.log(listId)
-        console.log(itemData)
+        // log removed
         return createItem(listId, itemData)
     },
     onSuccess: ()=> {
@@ -26,7 +25,7 @@ export function useItems(userId?: string) {
     { itemId: string; listId?: string }
    >({
     mutationFn : ({itemId})=>{
-        console.log(itemId)
+        // log removed
         return deleteItem(itemId)
     },
     onSuccess: ()=> {
@@ -41,8 +40,8 @@ export function useItems(userId?: string) {
     { itemId: string; updatedData: unknown }
    >({
     mutationFn : ({itemId, updatedData})=>{
-        console.log(itemId)
-        console.log(updatedData)
+        // log removed
+        // log removed
         return updateItem(itemId, updatedData)
     },
     onSuccess: ()=> {

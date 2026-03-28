@@ -17,14 +17,14 @@ export async function getLists() {
 // @path PUT /api/list/:id
 export async function updateList(id, updatedData){
 const res = await api.put(`/list/${id}`, updatedData)
-console.log(id, updatedData)
+// log removed
 return res.data
 }
 
 // @path DELETE /api/list/:id
 export async function deleteList(id){
     const res = await api.delete(`/list/${id}`)
-    console.log(id)
+    // log removed
     return res.data
 
 }

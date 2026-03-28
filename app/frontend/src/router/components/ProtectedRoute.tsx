@@ -10,7 +10,7 @@ export default function ProtectedRoute({
 }: childrenType) {
   const { data, isError, isLoading, isFetching } =
     useUserInfo();
-  console.log(data);
+  // log removed
   if (isLoading) {
     return <LoadingState
         variant="page"
