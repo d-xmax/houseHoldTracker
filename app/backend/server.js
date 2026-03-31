@@ -9,11 +9,9 @@ import {
 import { connectDB } from './config/config.js';
 import errorHandler from './middleware/errorMiddleware.js';
 import cookieParser from 'cookie-parser';
-import path from 'path';
+// import path from 'path';
 
-dotenv.config({
-  path: path.resolve('../../.env'),
-});
+dotenv.config();
 const port = process.env.PORT || 5000;
 connectDB();
 
