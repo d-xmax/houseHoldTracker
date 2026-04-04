@@ -201,6 +201,19 @@ export function useInventory() {
       ) ?? null,
     [lists, selectedListId],
   );
+
+  const isListMutationPending =
+    createListMutation.isPending ||
+    updateListMutation.isPending ||
+    deleteListMutation.isPending;
+
+  const isItemMutationPending =
+    createItemMutation.isPending ||
+    updateItemMutation.isPending ||
+    deleteItemMutation.isPending;
+
+  const isInventoryMutating =
+    isListMutationPending || isItemMutationPending;
  
   const allCategories = useMemo(() => {
     const categories = new Set<string>();
@@ -716,6 +729,7 @@ export function useInventory() {
     confirmDelete,
     cancelDelete,
     isLoadingListData,
-    isItemDataLoading
+    isItemDataLoading,
+    isInventoryMutating
   };
 }

@@ -8,6 +8,7 @@ import { EditItemModal } from '@/pages/dashboard/components/modals/EditItemModal
 import { BulkAddModal } from '@/pages/dashboard/components/modals/BulkAddModal';
 import { DeleteConfirmModal } from '@/pages/dashboard/components/modals/DeleteConfirmModal';
 import { useInventory } from '../hooks/useInventory';
+import { LoadingState } from '@/shared/components/LoadingState';
 
 export default function GroceryPilot( ) {
   const {
@@ -61,12 +62,24 @@ export default function GroceryPilot( ) {
     confirmDelete,
     cancelDelete,
     isLoadingListData,
-    isItemDataLoading
+    isItemDataLoading,
+    isInventoryMutating
   } = useInventory();
 
   return (
     <>
-      <div className="flex-1 p-4 lg:p-6">
+      <div className="relative flex-1 p-4 lg:p-6">
+        {isInventoryMutating && (
+          <div className="absolute inset-0 z-30 flex items-center justify-center bg-white/80 backdrop-blur-[1px]">
+            <div className="w-full max-w-md px-4">
+              <LoadingState
+                variant="panel"
+                title="Saving updates"
+                description="Syncing your changes..."
+              />
+            </div>
+          </div>
+        )}
         <div className="flex h-full flex-col gap-6">
           <div className="flex flex-1 min-h-0 flex-col gap-6 lg:flex-row">
             <ListSidebar

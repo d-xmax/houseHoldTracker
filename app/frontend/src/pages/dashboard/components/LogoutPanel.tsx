@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/card';
 import { useLogout } from '@/hooks/useLogout';
 import { useNavigate } from 'react-router-dom';
+import { LoadingState } from '@/shared/components/LoadingState';
 
 interface LogoutPanelProps {
   userName?: string;
@@ -56,7 +57,18 @@ export function LogoutPanel({
     logoutMutation.isPending;
 
   return (
-    <section className="space-y-6">
+    <section className="relative space-y-6">
+      {isBusy && (
+        <div className="absolute inset-0 z-20 flex items-center justify-center rounded-2xl bg-white/80 backdrop-blur-[1px]">
+          <div className="w-full max-w-md px-4">
+            <LoadingState
+              variant="panel"
+              title="Signing out"
+              description="Wrapping up your session..."
+            />
+          </div>
+        </div>
+      )}
       <Card className="border-red-100 bg-red-50/40">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-red-900">

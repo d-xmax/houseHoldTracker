@@ -27,5 +27,5 @@ app.use('/api/item', itemRouter);
 
 app.use(errorHandler);
 app.listen(port, () => {
-  console.log(`Server running on ${port}`);
+  console.log(`Server running on ${port} `);
 });

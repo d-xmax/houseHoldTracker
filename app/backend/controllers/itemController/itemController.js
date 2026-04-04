@@ -40,7 +40,10 @@ const getItem = asyncHandler(async (req, res) => {
       'Item finding not working please try again'
     );
   }
-  res.status(200).json(item, 'Item found');
+  res.status(200).json({
+    item,
+    message: 'Item found',
+  });
 });
 
 // @desc update one item from the list
