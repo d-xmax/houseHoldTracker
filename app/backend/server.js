@@ -1,4 +1,5 @@
 import dotenv from 'dotenv';
+import cors from 'cors';
 import express, { urlencoded } from 'express';
 import userRoutes from './routes/userRoutes.js';
 import listRoutes from './routes/listRoutes.js';
@@ -16,6 +17,7 @@ const port = process.env.PORT || 5000;
 connectDB();
 
 const app = express();
+app.use(cors());
 app.use(express.json());
 app.use(cookieParser(process.env.SECRET_KEY));
 app.use(express.urlencoded({ extended: true }));
