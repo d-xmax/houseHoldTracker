@@ -18,6 +18,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { useRegister } from '@/hooks/useRegister';
+import { LoadingState } from '@/shared/components/LoadingState';
 
 export type SignUpValues = {
   email: string;
@@ -47,8 +48,8 @@ const initialValues: SignUpValues = {
 };
 
 export function SignUpForm({
-  title = 'Create your household profile',
-  subtitle = 'Sign up to collaborate on grocery lists, pantry stock, and shared reminders.',
+  title = 'Create your profile',
+  subtitle = 'Sign up to the grocery pilot and start managing your monthly list',
   signInHref = '/login',
 }: SignUpFormProps) {
   const { registerMutation } = useRegister();
@@ -58,8 +59,7 @@ export function SignUpForm({
     useState<SignUpErrors>({});
   const [status, setStatus] =
     useState<StatusState>(null);
-  const [isSubmitting, setIsSubmitting] =
-    useState(false);
+  const isSubmitting = registerMutation.isPending;
   const [showPassword, setShowPassword] =
     useState(false);
 
@@ -149,8 +149,6 @@ export function SignUpForm({
       return;
     }
 
-    setIsSubmitting(true);
-
     registerMutation.mutate(
       {
         name: values.username.trim(),
@@ -176,15 +174,23 @@ export function SignUpForm({
               'Unable to create account. Please try again.',
           });
         },
-        onSettled: () => {
-          setIsSubmitting(false);
-        },
       },
     );
   };
 
   return (
     <Card className="relative overflow-hidden border-slate-200/80 bg-white/95 shadow-xl shadow-slate-900/5">
+      {isSubmitting && (
+        <div className="absolute inset-0 z-20 flex items-center justify-center bg-white/80 backdrop-blur-[1px]">
+          <div className="w-full max-w-md px-4">
+            <LoadingState
+              variant="panel"
+              title="Creating account"
+              description="Setting up your household profile..."
+            />
+          </div>
+        </div>
+      )}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(16,185,129,0.08),_transparent_55%)]"
@@ -193,7 +199,7 @@ export function SignUpForm({
       <div className="relative z-10">
         <CardHeader className="gap-3 pb-4">
           <span className="text-xs font-semibold uppercase tracking-[0.35em] text-emerald-500">
-            Household Tracker
+            Grocery Pilot
           </span>
           <CardTitle className="text-2xl sm:text-3xl">
             {title}
