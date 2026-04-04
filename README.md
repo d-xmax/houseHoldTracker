@@ -1,4 +1,4 @@
-# 🏠 HouseHold Tracker
+# 🏠 Grocery Pilot
 
 > **A full-stack household inventory and grocery planning application** built with React, Express, and MongoDB.
 
@@ -6,7 +6,7 @@
 
 ## 📖 Introduction
 
-HouseHold Tracker helps you manage your home inventory and plan grocery shopping in one place. Organize items into custom lists, track quantities and costs, search and filter your inventory, and export reports as PDFs — all from a clean, responsive dashboard.
+Grocery Pilot helps you manage your home inventory and plan grocery shopping in one place. Organize items into custom lists, track quantities and costs, search and filter your inventory, and export reports as PDFs — all from a clean, responsive dashboard.
 
 ---
 
