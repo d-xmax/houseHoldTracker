@@ -1,0 +1,4 @@
+[build]
+  base = "app/frontend"
+  command = "pnpm run build"
+  publish = "dist"
