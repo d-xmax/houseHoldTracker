@@ -12,13 +12,13 @@ export default defineConfig({
     },
   },
   server: {
-    proxy:{
-      "/api":{
-        target: "http://3.235.187.99:5000",
-        changeOrigin: true,
-        secure: false,
-      }
-    },
+    // proxy:{
+    //   "/api":{
+    //     target: "http:localhost:5000",
+    //     changeOrigin: true,
+    //     secure: false,
+    //   }
+    // },
     watch: {
       // use polling for reliable refresh on Windows / WSL / network drives
       usePolling: true,

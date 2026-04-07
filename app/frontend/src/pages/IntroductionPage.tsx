@@ -18,8 +18,8 @@ const highlights = [
 export default function IntroductionPage() {
 	const currentYear = new Date().getFullYear();
 	return (
-		<div className="min-h-screen w-screen flex items-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white animated-bg">
-			<div className="mx-auto flex w-full max-w-6xl flex-col gap-16 px-6 py-12 lg:px-10">
+		<div className="flex min-h-screen w-full flex-col bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white animated-bg">
+			<div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-16 px-6 py-12 lg:px-10">
 				<section className="grid gap-10 lg:grid-cols-[3fr_2fr] lg:items-center">
 					<div className="space-y-6">
 						<div className="inline-flex items-center gap-3 rounded-full border border-emerald-300/40 bg-slate-900/40 px-4 py-1 text-lg font-extrabold uppercase tracking-[0.2em] bg-gradient-to-r from-emerald-300 via-cyan-300 to-indigo-300 bg-clip-text text-transparent shadow-[0_0_24px_rgba(16,185,129,0.35)]">
@@ -38,18 +38,18 @@ export default function IntroductionPage() {
 							you go shopping. No more last-minute thinking or forgotten items,
 							enjoy a smooth and easy shopping experience.
 						</p>
-						<div className="flex flex-wrap gap-4">
-							<Link
-								to={"/signup"}
-								className="inline-flex items-center justify-center rounded-full bg-emerald-500 px-6 py-3 text-base font-semibold text-slate-900 transition hover:bg-emerald-400"
-							>
-								Create an account
-							</Link>
+						<div className="flex w-full flex-col gap-3 sm:flex-row sm:gap-4">
 							<Link
 								to={"/login"}
-								className="inline-flex items-center justify-center rounded-full border border-white/40 px-6 py-3 text-base font-semibold text-white transition hover:border-white"
+								className="inline-flex w-full items-center justify-center rounded-full border border-white/40 px-6 py-3 text-base font-semibold text-white transition hover:border-white sm:w-auto"
 							>
 								I already have access
+							</Link>
+							<Link
+								to={"/signup"}
+								className="inline-flex w-full items-center justify-center rounded-full bg-emerald-500 px-6 py-3 text-base font-semibold text-slate-900 transition hover:bg-emerald-400 sm:w-auto"
+							>
+								Create an account
 							</Link>
 						</div>
 					</div>
@@ -152,7 +152,7 @@ export default function IntroductionPage() {
 				</section>
 			</div>
 
-			<footer className="w-full text-center py-4 bg-slate-900/80 text-white/70 text-sm font-normal tracking-wide shadow-sm absolute bottom-0 left-0">
+			<footer className="mt-auto w-full text-center py-4 bg-slate-900/80 text-white/70 text-sm font-normal tracking-wide shadow-sm">
 				&copy; {currentYear} DevDrag. All rights reserved.
 			</footer>
 		</div>
